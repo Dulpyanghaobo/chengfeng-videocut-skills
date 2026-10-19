@@ -1,5 +1,24 @@
 # chengfeng-videocut-skills
 
+## 本 fork 的暗黑小黑定制
+
+本地 Skill 位于 [`.agents/skills/chengfeng-xiaohei-dark`](.agents/skills/chengfeng-xiaohei-dark/SKILL.md)，基于独立小黑仓库固定提交 `6d337c741aeaf29a603cccabf3df62a10dcb57ce` 下载改编，来源摘要见目录内 `upstream-source.json`。
+
+默认深石墨舞台、浅色线条、原创工帽工人与少量琥珀色动作提示。保留上游白底模板。构图先审 State A/B，动态先验证接触、投单、设备响应与结果；角色参与解释，按内容选择画面。
+
+克隆本 fork 后，下个 Codex 任务可从项目的 `.agents/skills` 发现 `$chengfeng-xiaohei-dark`。也可将该 Skill 整个目录复制到自己的项目 `.agents/skills/`。只下载文件不等于当前宿主已加载。
+
+预览与检查：
+
+```bash
+python3 -m http.server 8769 --bind 127.0.0.1
+# 打开 http://127.0.0.1:8769/.agents/skills/chengfeng-xiaohei-dark/assets/templates/xiaohei-dark-motion/index.html
+node --test test/xiaohei-dark.test.mjs
+node scripts/check-xiaohei-source.mjs
+```
+
+可播放模板为十秒动作示例，没有原声或真实车辆测试。角色原型、State A/B、实际动态截图和审看范围随模板保存。固定发行的 Plugin、安装器 pin 与 Runtime 不属于此定制入口；原有安装命令仍按下文说明安装上游固定发行包。
+
 chengfeng-videocut 的公开 **Codex Plugin 安装入口**。软件本体 Runtime / Studio 的源码与发行产物在 [chengfeng-videocut](https://github.com/Agentchengfeng/chengfeng-videocut)。
 
 Plugin 提供给 Agent 的方法和确认工具；Runtime 执行工程操作并提供工作台。安装 Plugin、准备 Runtime、完成视频是三件不同的事。本仓不是已经停用的链接页，也不是新的独立 Skills 全套下载器。

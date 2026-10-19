@@ -1,0 +1,24 @@
+name: xiaohei-dark
+on:
+  push:
+    paths:
+      - '.agents/skills/chengfeng-xiaohei-dark/**'
+      - 'test/xiaohei-dark.test.mjs'
+      - 'scripts/check-xiaohei-source.mjs'
+      - '.github/workflows/xiaohei-dark.yml'
+  pull_request:
+    paths:
+      - '.agents/skills/chengfeng-xiaohei-dark/**'
+      - 'test/xiaohei-dark.test.mjs'
+      - 'scripts/check-xiaohei-source.mjs'
+      - '.github/workflows/xiaohei-dark.yml'
+jobs:
+  source-and-actions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node --test test/xiaohei-dark.test.mjs
+      - run: node scripts/check-xiaohei-source.mjs

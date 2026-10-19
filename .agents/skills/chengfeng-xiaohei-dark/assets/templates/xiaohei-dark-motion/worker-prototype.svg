@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="700" viewBox="0 0 1080 700" font-family="Heiti SC,sans-serif"><rect width="1080" height="700" fill="#10171D"/><text x="80" y="90" font-size="36" fill="#DFE7E4">原创工人 · 暗黑动作原型</text><g transform="translate(160 350) scale(1.7)"><g transform="translate(0 0)" stroke-linejoin="round" stroke-linecap="round">
+ <path d="M-21 27 Q-29 57 -37 75 L-54 78 M18 30 Q30 54 35 76 L55 78" stroke="#DFE7E4" stroke-width="9" fill="none"/>
+ <path d="M-31 -5 Q-39 22 -25 39 Q0 50 27 35 L30 0Z" fill="#293E4B" stroke="#DFE7E4" stroke-width="3.5"/>
+ <path d="M-15 4 V26 H12 V4 M-15 16 H12" fill="none" stroke="#87BAC9" stroke-width="3"/>
+ <path d="M-34 -2 Q-59 20 -43 41 M30 -2 Q54 17 60 20" stroke="#DFE7E4" stroke-width="8" fill="none"/>
+ <circle cx="-43" cy="41" r="6" fill="#F1AD69"/><circle cx="60" cy="20" r="6" fill="#F1AD69"/>
+ <path d="M-36 -31 V-48 Q-34 -77 -5 -79 Q28 -78 34 -49 V-31Z" fill="#C6D2D0" stroke="#DFE7E4" stroke-width="3"/>
+ <path d="M-38 -43 H37" stroke="#F1AD69" stroke-width="6"/>
+ <rect x="-26" y="-42" width="55" height="28" rx="13" fill="#10171D"/>
+ <circle cx="10" cy="-30" r="3.8" fill="#DFE7E4"/><circle cx="23" cy="-30" r="3.8" fill="#DFE7E4"/>
+ <g transform="translate(75 17)"><path d="M-13 -18 H14 L17 15 H-13Z" fill="#203540" stroke="#87BAC9" stroke-width="3"/><path d="M-7 -9 H8 M-7 -2 H9 M-7 5 H5" stroke="#87BAC9" stroke-width="2.5"/></g></g></g><text x="135" y="580" font-size="30" fill="#87BAC9">携单</text><g transform="translate(500 350) scale(1.7)"><g transform="translate(0 0)" stroke-linejoin="round" stroke-linecap="round">
+ <path d="M-21 27 Q-29 57 -37 75 L-54 78 M18 30 Q30 54 35 76 L55 78" stroke="#DFE7E4" stroke-width="9" fill="none"/>
+ <path d="M-31 -5 Q-39 22 -25 39 Q0 50 27 35 L30 0Z" fill="#293E4B" stroke="#DFE7E4" stroke-width="3.5"/>
+ <path d="M-15 4 V26 H12 V4 M-15 16 H12" fill="none" stroke="#87BAC9" stroke-width="3"/>
+ <path d="M-34 -2 Q-59 20 -43 41 M30 -2 Q54 15.0 69.0 7.0" stroke="#DFE7E4" stroke-width="8" fill="none"/>
+ <circle cx="-43" cy="41" r="6" fill="#F1AD69"/><circle cx="69.0" cy="7.0" r="6" fill="#F1AD69"/>
+ <path d="M-36 -31 V-48 Q-34 -77 -5 -79 Q28 -78 34 -49 V-31Z" fill="#C6D2D0" stroke="#DFE7E4" stroke-width="3"/>
+ <path d="M-38 -43 H37" stroke="#F1AD69" stroke-width="6"/>
+ <rect x="-26" y="-42" width="55" height="28" rx="13" fill="#10171D"/>
+ <circle cx="10" cy="-30" r="3.8" fill="#DFE7E4"/><circle cx="23" cy="-30" r="3.8" fill="#DFE7E4"/>
+ <g transform="translate(84.0 4.0)"><path d="M-13 -18 H14 L17 15 H-13Z" fill="#203540" stroke="#87BAC9" stroke-width="3"/><path d="M-7 -9 H8 M-7 -2 H9 M-7 5 H5" stroke="#87BAC9" stroke-width="2.5"/></g></g></g><text x="475" y="580" font-size="30" fill="#87BAC9">伸手</text><g transform="translate(830 350) scale(1.7)"><g transform="translate(0 0)" stroke-linejoin="round" stroke-linecap="round">
+ <path d="M-21 27 Q-29 57 -37 75 L-54 78 M18 30 Q30 54 35 76 L55 78" stroke="#DFE7E4" stroke-width="9" fill="none"/>
+ <path d="M-31 -5 Q-39 22 -25 39 Q0 50 27 35 L30 0Z" fill="#293E4B" stroke="#DFE7E4" stroke-width="3.5"/>
+ <path d="M-15 4 V26 H12 V4 M-15 16 H12" fill="none" stroke="#87BAC9" stroke-width="3"/>
+ <path d="M-34 -2 Q-59 20 -43 41 M30 -2 Q54 13 78 -6" stroke="#DFE7E4" stroke-width="8" fill="none"/>
+ <circle cx="-43" cy="41" r="6" fill="#F1AD69"/><circle cx="78" cy="-6" r="6" fill="#F1AD69"/>
+ <path d="M-36 -31 V-48 Q-34 -77 -5 -79 Q28 -78 34 -49 V-31Z" fill="#C6D2D0" stroke="#DFE7E4" stroke-width="3"/>
+ <path d="M-38 -43 H37" stroke="#F1AD69" stroke-width="6"/>
+ <rect x="-26" y="-42" width="55" height="28" rx="13" fill="#10171D"/>
+ <circle cx="10" cy="-30" r="3.8" fill="#DFE7E4"/><circle cx="23" cy="-30" r="3.8" fill="#DFE7E4"/>
+ </g></g><text x="805" y="580" font-size="30" fill="#87BAC9">接触</text></svg>

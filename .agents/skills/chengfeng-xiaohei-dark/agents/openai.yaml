@@ -1,0 +1,7 @@
+interface:
+  display_name: "暗黑小黑 · 动作漫画"
+  short_description: "用原创工人、暗黑舞台和具体操作制作少字概念讲解与可编辑 SVG 动效"
+  brand_color: "#F1AD69"
+  default_prompt: "用 $chengfeng-xiaohei-dark 按这段口播设计暗黑动作漫画，先做原创工人和代表性动态原型。"
+policy:
+  allow_implicit_invocation: true

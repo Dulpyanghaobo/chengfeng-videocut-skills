@@ -18,5 +18,9 @@
   ],
   "engines": {
     "node": ">=18"
+  },
+  "scripts": {
+    "test:xiaohei": "node --test test/xiaohei-dark.test.mjs",
+    "check:xiaohei-source": "node scripts/check-xiaohei-source.mjs"
   }
 }

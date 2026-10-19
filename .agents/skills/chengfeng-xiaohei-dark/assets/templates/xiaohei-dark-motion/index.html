@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>暗黑小黑 · 动作原型</title><link rel="icon" href="data:,"><style>
+:root{color-scheme:dark;--background:#10171D;--ink:#DFE7E4;--surface:#1C2932;--muted:#91A4AD;--orange:#F1AD69}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--background);color:var(--ink);font:14px -apple-system,BlinkMacSystemFont,"PingFang SC","Noto Sans SC",sans-serif}
+main{width:min(100%,400px);margin:0 auto;padding:16px 20px}h1{font-size:17px;font-weight:600;margin:0 0 10px}p{color:var(--muted);line-height:1.6}a{color:var(--orange)}
+.controls{white-space:nowrap;display:flex;align-items:center;gap:8px;margin:8px 0}button{border:1px solid var(--muted);background:var(--surface);color:var(--ink);padding:8px 12px;border-radius:5px;font:inherit;cursor:pointer}button:focus-visible,a:focus-visible{outline:2px solid var(--orange);outline-offset:3px}input{min-width:0;width:100%;accent-color:var(--orange)}output{white-space:nowrap;color:var(--muted);font-variant-numeric:tabular-nums}
+#stage{display:block;width:100%;height:auto;aspect-ratio:9/16;background:var(--background)}#stage text{font-family:"PingFang SC","Noto Sans SC",sans-serif}#stage path,#stage circle,#stage rect{stroke-linecap:round;stroke-linejoin:round}
+html.embed,html.embed body{height:100%;min-height:0;background:transparent}html.embed main{width:100%;height:100%;max-width:none;margin:0;padding:0}html.embed .preview-ui{display:none}html.embed #stage{width:100%;height:100%;object-fit:contain}
+</style></head><body><main><header class="preview-ui"><h1>暗黑小黑 · 动作原型</h1><div class="controls"><button id="play">播放</button><button id="reset">回到起点</button><output id="time">0.00 / 10.00</output></div><label class="controls">时间<input id="scrub" aria-label="时间" type="range" min="0" max="10" value="0" step="0.01"></label></header>
+<svg id="stage" xmlns="http://www.w3.org/2000/svg" width="1080" height="1920" viewBox="0 0 1080 1920" role="img" aria-label="两个相同规模工厂，工人投单后，一个间歇运转，一个持续处理"></svg>
+<footer class="preview-ui"><p>十秒动作示例 · 原创工人 · 非真实设备测试</p><p><a href="worker-prototype.svg">角色原型</a> · <a href="prototype-state-a.svg">State A</a> · <a href="prototype-state-b.svg">State B</a></p></footer></main>
+<script src="vendor/gsap.min.js"></script><script type="module" src="scene.mjs"></script></body></html>

@@ -1,0 +1,42 @@
+{
+  "scope": "Ten-second dark SVG authoring example only; not the 28.9-second narrated episode",
+  "status": "PASS_FOR_LOCAL_EXAMPLE",
+  "reviewed_at": "2026-10-19T02:30:08.250372+00:00",
+  "design_review": {
+    "worker": "Original helmet/jacket/glove design, carry/reach/contact poses inspected before implementation",
+    "state_a": "prototype-state-a.png",
+    "state_b": "prototype-state-b.png",
+    "phone_size": "360x640 prototypes and 360px-wide rendered browser stage"
+  },
+  "continuous_review": {
+    "method": "Normal-speed in-app browser playback, observed intermediate states at 3.52s and 8.88s and endpoint; final queue/UI revision played to endpoint and checked at 3.50s, 9.80s and reverse seek to zero",
+    "observations": [
+      "Paper/hand release positions meet; machine responds only after input arrives",
+      "Upper operation stops; lower remains active with repeated input, gears and output",
+      "Helmet, hands, orders and annotations stay distinct; no face crossing",
+      "Reverse seek restores held orders and hides future labels; control step corrected to valid 0.01-second UI increments"
+    ],
+    "console_errors_or_warnings": []
+  },
+  "sources_sha256": {
+    "index.html": "2c59075cdb6f765d89e30421ec6b20819f40c6a14b28bfcce4a19f5fcce948c5",
+    "scene.mjs": "e71bf2e38ad993aebeb9636a2689918c933f03778757d4bd7067b2abc044cbd0",
+    "motion.mjs": "45c2945f18ae77015ee7bafa723a87baf46855faee134c149b6c00753e221e9f",
+    "theme.mjs": "06dc936c6c05f60623a02fb436927c087a6fd6ba0d09a2195b38d4ccce58fb11"
+  },
+  "preview_sha256": {
+    "preview.png": "350b344cec61fa6dcededec2f1ac91f6290a973f4dfe0151d7f25ffe1cc74aa9",
+    "preview-mid.png": "fb94ae666f8ecd9732c0b4185bf97d1ff32983b527929263d84403e591c99e3c"
+  },
+  "validation": {
+    "action_tests": "7 passed",
+    "bootstrap_regressions": "23 passed",
+    "source_receipt": "48 imported files unchanged; 6 declared adaptations verified",
+    "skill_structure": "quick_validate.py passed"
+  },
+  "not_tested": [
+    "Runtime/Studio integration",
+    "Narration, subtitle timing and audio",
+    "Viewer retention or the full 28.9-second episode in the dark variant"
+  ]
+}
