@@ -1,0 +1,24 @@
+{
+  "output": "/Users/I564407/Documents/githubAI/chengfeng-videocut-skills/automotive-video/review/showcase.mp4",
+  "sha256": "a701ad6e9ed55705e3a9f516372ebdd850b4bb49b6460fe1aba4f4b295ab9f85",
+  "media": {
+    "width": 1280,
+    "height": 720,
+    "fps": 30,
+    "duration": 24,
+    "hasAudio": false,
+    "codec": "h264"
+  },
+  "planned": {
+    "duration": 24,
+    "fps": 30,
+    "width": 1280,
+    "height": 720
+  },
+  "masterPreserved": false,
+  "technicalVerification": "PASS",
+  "visualVerification": "UNVERIFIED",
+  "humanListening": "UNVERIFIED",
+  "soundEffects": "not-added",
+  "warnings": []
+}
