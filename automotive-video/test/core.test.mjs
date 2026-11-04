@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
-import {importAsset,searchAssets,verifyLibrary,svgInfo,writeJson,readJson} from '../src/library.mjs';
+import {importAsset,searchAssets,verifyLibrary,svgInfo,writeJson,readJson,findAsset,particlePoints} from '../src/library.mjs';
 import {parseSrt,validateProject,demoProject,prepareProject} from '../src/project.mjs';
 import {particles,renderSceneSvg,random} from '../src/visuals.mjs';
 import {MOTIONS,SCENES} from '../src/catalog-data.mjs';
@@ -41,3 +41,4 @@ test('项目快照重复准备一致，损坏快照会被拒绝',()=>{
  }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
 test('云端响应按毫秒转秒，不编造词级时间',()=>{const result=parseAsrResult({result:{utterances:[{start_time:100,end_time:900,text:'电机',words:[{start_time:100,end_time:400,text:'电'}]}]}});assert.equal(result[0].start,.1);assert.equal(result[0].words[0].end,.4);assert.throws(()=>parseAsrResult({}));});
+test('Logo 填充与轮廓采样可分别复用，聚合目标确定',()=>{const a=findAsset('logo.tesla'),fill=particlePoints(a),edge=particlePoints(a,{edge:true});assert.ok(fill.length>edge.length);assert.ok(edge.length>20);assert.deepEqual(fill,particlePoints(a));const svg=particles({effect:'dissolve',time:3,duration:6,targetPoints:fill,density:200,intensity:1});assert.doesNotMatch(svg,/NaN|undefined/);assert.equal(svg,particles({effect:'dissolve',time:3,duration:6,targetPoints:fill,density:200,intensity:1}));});

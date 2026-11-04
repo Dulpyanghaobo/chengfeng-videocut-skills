@@ -30,7 +30,9 @@ export async function renderProject(file,{out,transparent=false,still,scale=1,al
  const media=probe(outputFile);const p=props.project;
  if(Math.abs(media.duration-p.duration)>Math.max(1/p.fps,.05)||media.width!==Math.round(p.width*Number(scale))||media.height!==Math.round(p.height*Number(scale)))throw Error('输出与计划的尺寸或时长不一致');
  if(p.master?.hasAudio&&!media.hasAudio)throw Error('输出缺少母版音轨');
- const report={output:outputFile,sha256:hashFile(outputFile),media,planned:{duration:p.duration,fps:p.fps,width:p.width,height:p.height},masterPreserved:!!p.master,technicalVerification:'PASS',visualVerification:'UNVERIFIED',humanListening:'UNVERIFIED',soundEffects:p.soundEffects?.length?'planned-not-rendered':'not-added',warnings:prepared.check.warnings};
+ let alphaVerification;
+ if(transparent){const pixels=execFileSync('ffmpeg',['-v','error','-c:v','libvpx-vp9','-i',outputFile,'-vf','alphaextract','-frames:v','1','-f','rawvideo','-pix_fmt','gray','-'],{maxBuffer:media.width*media.height+65536});let min=255,max=0;for(const n of pixels){min=Math.min(min,n);max=Math.max(max,n);}if(min===255)throw Error('输出没有透明区域，请同时设置项目与场景透明');alphaVerification={status:'PASS',firstFrameAlphaRange:[min,max]};}
+ const report={output:outputFile,sha256:hashFile(outputFile),media,planned:{duration:p.duration,fps:p.fps,width:p.width,height:p.height},masterPreserved:!!p.master,...(alphaVerification?{alphaVerification}:{}),technicalVerification:'PASS',visualVerification:'UNVERIFIED',humanListening:'UNVERIFIED',soundEffects:p.soundEffects?.length?'planned-not-rendered':'not-added',warnings:prepared.check.warnings};
  writeJson(path.join(dir,'verification.json'),report);return report;
 }
 async function main(){
@@ -53,7 +55,7 @@ async function main(){
   const ext=extensions[mime]||path.extname(url.pathname).toLowerCase();if(!['.svg','.png','.jpg','.jpeg','.webp','.mp4','.mov','.webm'].includes(ext)||mime==='text/html')throw Error('该链接不是支持的原始素材文件；网页/平台视频页面需先获取实际素材地址');
   const temp=fs.mkdtempSync(path.join(os.tmpdir(),'auto-video-fetch-'));try{
    const file=path.join(temp,`download${ext}`);const fd=fs.openSync(file,'wx');let size=0;try{for await(const chunk of response.body){size+=chunk.length;if(size>512*1024*1024)throw Error('素材超过 512 MB，请使用本地文件入库');fs.writeSync(fd,chunk);}}finally{fs.closeSync(fd);}
-   output(await importAsset({...o,file,id:fileOption(o,'id'),tags:o.tags?String(o.tags).split(','):['待标注'],source:url.href,representation:o.representation||'unknown'}));
+   output(await importAsset({...o,file,id:fileOption(o,'id'),tags:o.tags?String(o.tags).split(','):['待标注'],source:url.href,sourceType:'external-download',representation:o.representation||'unknown'}));
   }finally{fs.rmSync(temp,{recursive:true,force:true});}return;
  }
  if(command==='init'){output(initProject({video:fileOption(o,'video'),srt:o.srt,out:fileOption(o,'out'),title:o.title,width:o.width?Number(o.width):undefined,height:o.height?Number(o.height):undefined}));return;}

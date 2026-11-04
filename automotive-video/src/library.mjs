@@ -49,7 +49,7 @@ export function searchAssets(query='', filters={}){
     return {...a,score};
   }).filter(a=>!terms.length||a.score===terms.length).sort((a,b)=>b.score-a.score||a.name.localeCompare(b.name,'zh-CN'));
 }
-export async function importAsset({file,id,name,category='parts',tags=[],brand='',model='',year='',view='',representation='unknown',source='',usage='unspecified',version='1.0.0',libraryRoot=LIBRARY}){
+export async function importAsset({file,id,name,category='parts',tags=[],brand='',model='',year='',view='',representation='unknown',source='',sourceType='user-import',usage='unspecified',version='1.0.0',libraryRoot=LIBRARY}){
   safeId(id); if(!/^\d+\.\d+\.\d+$/.test(version))throw Error('version 必须是 x.y.z');
   const absolute=path.resolve(file); if(!fs.existsSync(absolute)||!fs.statSync(absolute).isFile())throw Error('素材文件不存在');
   const ext=path.extname(file).toLowerCase();
@@ -63,7 +63,7 @@ export async function importAsset({file,id,name,category='parts',tags=[],brand='
   if(old){if(old.sha256===sha256)return old;throw Error('同 ID 和版本已有不同内容，请提升版本；不会覆盖旧项目素材');}
   const rel=`user/${id}/${version}/${sha256.slice(0,12)}${ext}`;
   const dest=path.join(libraryRoot,rel); fs.mkdirSync(path.dirname(dest),{recursive:true}); fs.copyFileSync(absolute,dest,fs.constants.COPYFILE_EXCL);
-  const asset={id,name:name||id,version,category,kind:video?'video':ext==='.svg'?'svg':'image',file:rel,sha256,brand,model,year,view,representation,source:{url:source,type:'user-import',usage},tags:Array.isArray(tags)?tags:String(tags).split(','),...metadata,capabilities:video?['trim','cover','contain']:['display','translate','scale','fade'],colorPolicy:category==='logos'?'locked':'preserve'};
+  const asset={id,name:name||id,version,category,kind:video?'video':ext==='.svg'?'svg':'image',file:rel,sha256,brand,model,year,view,representation,source:{url:source,type:sourceType,usage},tags:Array.isArray(tags)?tags:String(tags).split(','),...metadata,capabilities:video?['trim','cover','contain']:['display','translate','scale','fade'],colorPolicy:category==='logos'?'locked':'preserve'};
   if(video){const preview=path.join(libraryRoot,`user/${id}/${version}/preview.jpg`);execFileSync('ffmpeg',['-v','error','-ss',String(Math.min(1,metadata.duration/2)),'-i',dest,'-frames:v','1','-vf','scale=640:-2','-y',preview]);asset.preview=path.relative(libraryRoot,preview);asset.segments=[{in:0,out:metadata.duration,description:'整段入库；需按实际画面进一步标注镜头'}];}
   index.assets.push(asset);writeJson(indexFile,index);return asset;
 }

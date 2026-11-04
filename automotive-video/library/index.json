@@ -488,7 +488,7 @@
     },
     {
       "id": "logo.bmw",
-      "name": "BMW",
+      "name": "宝马 BMW",
       "version": "1.0.0",
       "kind": "svg",
       "category": "logos",
@@ -498,6 +498,7 @@
       "height": 24,
       "tags": [
         "BMW",
+        "宝马",
         "bmw",
         "品牌",
         "Logo",
@@ -523,11 +524,14 @@
         },
         "usage": "brand-identification",
         "collection": "https://github.com/simple-icons/simple-icons"
-      }
+      },
+      "aliases": [
+        "宝马"
+      ]
     },
     {
       "id": "logo.volkswagen",
-      "name": "Volkswagen",
+      "name": "大众 Volkswagen",
       "version": "1.0.0",
       "kind": "svg",
       "category": "logos",
@@ -537,6 +541,7 @@
       "height": 24,
       "tags": [
         "Volkswagen",
+        "大众",
         "volkswagen",
         "品牌",
         "Logo",
@@ -562,11 +567,14 @@
         },
         "usage": "brand-identification",
         "collection": "https://github.com/simple-icons/simple-icons"
-      }
+      },
+      "aliases": [
+        "大众"
+      ]
     },
     {
       "id": "logo.toyota",
-      "name": "Toyota",
+      "name": "丰田 Toyota",
       "version": "1.0.0",
       "kind": "svg",
       "category": "logos",
@@ -576,6 +584,7 @@
       "height": 24,
       "tags": [
         "Toyota",
+        "丰田",
         "toyota",
         "品牌",
         "Logo",
@@ -601,11 +610,14 @@
         },
         "usage": "brand-identification",
         "collection": "https://github.com/simple-icons/simple-icons"
-      }
+      },
+      "aliases": [
+        "丰田"
+      ]
     },
     {
       "id": "logo.tesla",
-      "name": "Tesla",
+      "name": "特斯拉 Tesla",
       "version": "1.0.0",
       "kind": "svg",
       "category": "logos",
@@ -615,6 +627,7 @@
       "height": 24,
       "tags": [
         "Tesla",
+        "特斯拉",
         "tesla",
         "品牌",
         "Logo",
@@ -640,11 +653,14 @@
         },
         "usage": "brand-identification",
         "collection": "https://github.com/simple-icons/simple-icons"
-      }
+      },
+      "aliases": [
+        "特斯拉"
+      ]
     },
     {
       "id": "logo.xiaomi",
-      "name": "Xiaomi",
+      "name": "小米 Xiaomi",
       "version": "1.0.0",
       "kind": "svg",
       "category": "logos",
@@ -654,6 +670,7 @@
       "height": 24,
       "tags": [
         "Xiaomi",
+        "小米",
         "xiaomi",
         "品牌",
         "Logo",
@@ -679,11 +696,14 @@
         },
         "usage": "brand-identification",
         "collection": "https://github.com/simple-icons/simple-icons"
-      }
+      },
+      "aliases": [
+        "小米"
+      ]
     },
     {
       "id": "logo.huawei",
-      "name": "Huawei",
+      "name": "华为 Huawei",
       "version": "1.0.0",
       "kind": "svg",
       "category": "logos",
@@ -693,6 +713,7 @@
       "height": 24,
       "tags": [
         "Huawei",
+        "华为",
         "huawei",
         "品牌",
         "Logo",
@@ -718,7 +739,10 @@
         },
         "usage": "brand-identification",
         "collection": "https://github.com/simple-icons/simple-icons"
-      }
+      },
+      "aliases": [
+        "华为"
+      ]
     }
   ]
 }

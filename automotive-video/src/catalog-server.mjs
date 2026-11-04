@@ -1,7 +1,7 @@
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
-import {ROOT,allAssets,findAsset,libraryPath,assetData} from './library.mjs';
+import {ROOT,allAssets,findAsset,libraryPath,assetData,particlePoints} from './library.mjs';
 import {SCENES,MOTIONS,THEMES} from './catalog-data.mjs';
 import {renderSceneSvg} from './visuals.mjs';
 
@@ -29,7 +29,8 @@ export function startCatalog(port=3211){
     if(!Number.isFinite(time)||width<64||width>1920||height<64||height>1920)throw Error('预览参数无效');
     const color=url.searchParams.get('color');if(color&&!/^#[a-f\d]{6}$/i.test(color))throw Error('颜色格式错误');
     const scene=previewScene(kind,id,{theme:url.searchParams.get('theme')||'graphite',params:{density:Number(url.searchParams.get('density')||80),intensity:Number(url.searchParams.get('intensity')||.5),speed:Number(url.searchParams.get('speed')||1),...(color?{color}:{}),seed:'catalog-fixed'},transparent:url.searchParams.get('transparent')==='true'});
-    res.setHeader('Content-Type','image/svg+xml');res.setHeader('Cache-Control','no-store');res.end(renderSceneSvg(scene,Math.round(time*30),30,width,height,previewAssets()));return;
+    const assets=previewAssets(),target=url.searchParams.get('assetId');if(target&&kind==='motions'&&['dissolve','outline'].includes(id)){if(!assets[target])throw Error('目标图形不存在或不是图片');scene.assetId=target;assets[target].particlePoints={[id]:particlePoints(assets[target],{edge:id==='outline'})};}
+    res.setHeader('Content-Type','image/svg+xml');res.setHeader('Cache-Control','no-store');res.end(renderSceneSvg(scene,Math.round(time*30),30,width,height,assets));return;
    }
    if(url.pathname==='/thumbnail'){const a=findAsset(url.searchParams.get('id'));if(!a.preview)throw Error('没有独立缩略图');serveFile(req,res,libraryPath(a.preview),'image/jpeg');return;}
    if(url.pathname==='/asset'){

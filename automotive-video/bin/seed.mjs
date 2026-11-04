@@ -27,7 +27,8 @@ add('part.chip','计算芯片示意','parts',wrap(`<rect x="80" y="80" width="24
 add('part.road','起伏道路','parts',wrap('<path d="M0 180 H330 Q385 180 410 135 Q450 70 500 135 Q525 180 580 180 H1000 V250 H0 Z" fill="#243947"/><path d="M0 180 H330 Q385 180 410 135 Q450 70 500 135 Q525 180 580 180 H1000" stroke="#96aeb9" stroke-width="6"/>',1000,260),['道路','减速带','路面','起伏']);
 for(const slug of ['byd','bmw','mercedesbenz','volkswagen','toyota','tesla','nio','xiaomi','huawei','geely']){
  const icon=Object.values(icons).find(x=>x&&typeof x==='object'&&x.slug===slug);if(!icon)continue;
- add(`logo.${slug}`,icon.title,'logos',icon.svg.replace('<svg ','<svg fill="#'+icon.hex+'" '),[icon.title,slug,'品牌','Logo','标志'],{brand:icon.title,view:'flat',representation:'brand-glyph',colorPolicy:'locked',source:{type:'simple-icons',url:icon.source,package:'simple-icons@16.36.0',license:icon.license||{type:'CC0-1.0 collection; trademark remains separate'},usage:'brand-identification',collection:'https://github.com/simple-icons/simple-icons'}});
+ const chinese={bmw:'宝马',volkswagen:'大众',toyota:'丰田',tesla:'特斯拉',xiaomi:'小米',huawei:'华为'}[slug]||icon.title;
+ add(`logo.${slug}`,`${chinese} ${icon.title}`,'logos',icon.svg.replace('<svg ','<svg fill="#'+icon.hex+'" '),[icon.title,chinese,slug,'品牌','Logo','标志'],{aliases:[chinese],brand:icon.title,view:'flat',representation:'brand-glyph',colorPolicy:'locked',source:{type:'simple-icons',url:icon.source,package:'simple-icons@16.36.0',license:icon.license||{type:'CC0-1.0 collection; trademark remains separate'},usage:'brand-identification',collection:'https://github.com/simple-icons/simple-icons'}});
 }
 writeJson(path.join(LIBRARY,'index.json'),{schemaVersion:1,version:'1.0.0',assets});
 console.log(JSON.stringify({seeded:assets.length,logos:assets.filter(a=>a.category==='logos').map(a=>a.name)},null,2));

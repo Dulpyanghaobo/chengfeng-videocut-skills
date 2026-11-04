@@ -34,10 +34,10 @@ function carRig(asset,assets,time,{frontLift=0,rearLift=0,roll=true}={}){
 }
 
 export function renderSceneSvg(scene,frame,fps,width=1280,height=720,assets={}){
- const W=1200,H=1200*height/width,t=frame/fps,theme=THEMES[scene.theme]||THEMES.graphite,params=scene.params||{},accent=params.color||theme.accent;
+ const W=1200,H=1200*height/width,theme=THEMES[scene.theme]||THEMES.graphite,params=scene.params||{},accent=params.color||theme.accent,t=frame/fps*(params.speed??1);
  const motion=scene.motion||'ambient';const duration=scene.duration||6;
- let out=scene.transparent?'':`<rect width="${W}" height="${H}" fill="${theme.background}"/><path d="M70 74 H1130 M70 ${H-65} H1130" stroke="${theme.muted}" opacity=".15"/>`;
- out+=particles({effect:motion,time:t,width:W,height:H,seed:params.seed||scene.id||'auto',density:params.density||55,intensity:params.intensity??.3,speed:params.speed??1,color:accent,secondary:theme.secondary,duration,targetPoints:assets[scene.assetId]?.particlePoints?.[motion]||[]});
+ let out=scene.transparent?'':`<rect width="${W}" height="${H}" fill="${theme.background}"/>${scene.type!=='motion'||params.frameLines===true?`<path d="M70 74 H1130 M70 ${H-65} H1130" stroke="${theme.muted}" opacity=".15"/>`:''}`;
+ out+=particles({effect:motion,time:frame/fps,width:W,height:H,seed:params.seed||scene.id||'auto',density:params.density||55,intensity:params.intensity??.3,speed:params.speed??1,color:accent,secondary:theme.secondary,duration,targetPoints:assets[scene.assetId]?.particlePoints?.[motion]||[]});
  const type=scene.type||'motion';
  if(type!=='motion'){
   const title=scene.title||'';
@@ -45,6 +45,10 @@ export function renderSceneSvg(scene,frame,fps,width=1280,height=720,assets={}){
   if(scene.subtitle)out+=label(scene.subtitle,82,196,25,theme.muted);
  }
  const diagramY=H>900?H*.39:210;
+ const safeBottom=clamp(scene.safeBottom||0,0,.4),availableBottom=H*(1-safeBottom),top=diagramY-30;
+ const bottom={suspension:diagramY-25+460,energy:diagramY+430,sensor:(H>900?H*.58+330:660),compare:diagramY+380+(H>900?400:0),asset:(H>900?H*.74+75:650)}[type]||H;
+ const diagramScale=safeBottom?Math.min(1,Math.max(.25,(availableBottom-top-15)/(bottom-top))):1;
+ if(type!=='motion')out+=`<g data-role="diagram" transform="translate(${W*(1-diagramScale)/2} ${top*(1-diagramScale)}) scale(${diagramScale})">`;
  if(type==='suspension'){
   const a=assets[scene.assetId||'vehicle.sedan.side'];const amplitude=Number(params.amplitude??40),bumpX=(t*.18%1)*1400-180;const lift=x=>amplitude*Math.exp(-(((x-bumpX)/85)**2));const frontLift=lift(245),rearLift=lift(755);const road=Array.from({length:71},(_,i)=>`${i?'L':'M'}${i*15} ${395-lift(i*15)}`).join(' ');
   out+=`<g transform="translate(90 ${diagramY-25}) scale(1.02)"><path d="${road}" fill="none" stroke="${accent}" stroke-width="4" opacity=".55"/>${carRig(a,assets,t,{frontLift,rearLift})}<path d="M245 ${235-(frontLift+rearLift)*.35} l-15 12 l30 12 l-30 12 l30 12 l-15 12" stroke="${accent}" stroke-width="4" fill="none"/>${label('车轮随路面运动',125,449,25,theme.muted)}${label('车身响应',700,110,25,accent)}</g>`;
@@ -59,12 +63,13 @@ export function renderSceneSvg(scene,frame,fps,width=1280,height=720,assets={}){
   out+=`<g transform="translate(600 ${cy}) scale(${H>900?1:.72})"><circle r="250" stroke="${accent}" fill="none" opacity=".13"/><circle r="170" stroke="${accent}" fill="none" opacity=".16"/><circle r="90" stroke="${accent}" fill="none" opacity=".2"/><g transform="rotate(${t*38})"><path d="M0 0 L-48 -255 A260 260 0 0 1 110 -235 Z" fill="${accent}" opacity=".12"/><path d="M0 0 L110 -235" stroke="${accent}" stroke-width="2" opacity=".7"/></g>${image(assets[scene.assetId||'vehicle.top']?.data,-62,-110,124,220)}<rect x="-228" y="-180" width="45" height="75" rx="8" stroke="${theme.secondary}" fill="none" stroke-width="3"/><rect x="185" y="100" width="50" height="80" rx="8" stroke="${theme.secondary}" fill="none" stroke-width="3"/>${label('二维感知示意',0,305,28,theme.muted,'middle')}</g>`;
  }else if(type==='compare'){
   const ids=scene.assetIds||['vehicle.sedan.side','vehicle.suv.side'];const y=diagramY+50;const vertical=H>900;
-  for(let i=0;i<2;i++){const x=vertical?100:70+i*570,yy=vertical?y+i*400:y,w=vertical?1000:520;out+=`<rect x="${x}" y="${yy}" width="${w}" height="330" rx="24" fill="${theme.surface}"/>${image(assets[ids[i]]?.data,x+25,yy+30,w-50,200)}${label(scene.labels?.[i]||['方案 A','方案 B'][i],x+w/2,yy+280,30,i?theme.secondary:accent,'middle')}`;}
+  for(let i=0;i<2;i++){const x=vertical?100:70+i*570,yy=vertical?y+i*400:y,w=vertical?1000:520,a=assets[ids[i]],scale=Math.min((w-50)/1000,(vertical?270:210)/420);out+=a?.rig?`<g transform="translate(${x+(w-1000*scale)/2} ${yy+15}) scale(${scale})">${carRig(a,assets,t*(i?1:.8))}</g>`:image(a?.data,x+25,yy+15,w-50,vertical?270:210);out+=`<path d="M${x+50} ${yy+(vertical?300:240)} H${x+w-50}" stroke="${i?theme.secondary:accent}" stroke-width="2" opacity=".45"/>${label(scene.labels?.[i]||['方案 A','方案 B'][i],x+w/2,yy+(vertical?350:290),30,i?theme.secondary:accent,'middle')}`;}
  }else if(type==='asset'){
   const a=assets[scene.assetId||'vehicle.sedan.side'];const h=H>900?H*.36:330;const y=H>900?H*.38:240;
   const appear=ease(t/.7);out+=`<g opacity="${appear}" transform="translate(0 ${(1-appear)*25})">${a?.rig?`<g transform="translate(130 ${y}) scale(.94)">${carRig(a,assets,t)}</g>`:image(a?.data,130,y,940,h)}</g>`;
   if(a?.representation==='schematic')out+=label('通用原理示意',600,y+h+55,25,theme.muted,'middle');
  }
- if(scene.annotation)out+=label(scene.annotation,80,H-100,27,theme.muted);
+ if(type!=='motion')out+='</g>';
+ if(scene.annotation)out+=label(scene.annotation,80,Math.min(H-100,availableBottom-20),27,theme.muted);
  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${W} ${H}">${out}</svg>`;
 }

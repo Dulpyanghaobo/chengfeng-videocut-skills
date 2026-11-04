@@ -2,6 +2,8 @@
   "name": "automotive-video-kit",
   "version": "1.0.0",
   "private": true,
+  "license": "Apache-2.0",
+  "engines": {"node": ">=20"},
   "type": "module",
   "description": "Reusable 2D automotive assets, motion scenes and rough-cut video finishing tools.",
   "scripts": {

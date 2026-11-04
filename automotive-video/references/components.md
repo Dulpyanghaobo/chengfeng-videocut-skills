@@ -19,6 +19,8 @@
 
 所有效果可调整：`params.color`（#RRGGBB）、`density`（8–200）、`speed`、`intensity`（0–1）、`seed`。主题：graphite、ice、paper。背景动效不自动进入每个镜头。
 
+独立动效命令参数：`--width` / `--height`（偶数像素，默认 1280×720）、`--fps`（默认 30）、`--duration`（秒，默认 6）、`--theme`、`--color`、`--density`、`--speed`（0.05–10）、`--intensity`、`--seed`、`--asset-id`、`--transparent`。普通背景默认没有边框线，项目 JSON 可设 `params.frameLines=true`。
+
 ## 场景
 
 | type | 主要对象 | 参数 |
@@ -47,6 +49,11 @@
 }
 ```
 `body` 图层不包含车轮；轮心与半径使用同一坐标系。普通整图可显示、移动、缩放和淡入；车轮旋转与悬架动作需要明确部件与锚点。不要把一张整图旋转冒充车轮转动。用 `rig-create` 注册用户分层部件，具体命令见工具帮助。
+
+```sh
+node bin/auto-video.mjs rig-create --id "vehicle.my-car.rig" --name "我的车型分层" --body "vehicle.my-car.body" --wheel "part.my-wheel" --front "245,325" --rear "755,325" --radius 70
+```
+锚点以 1000×420 的统一布局为准，车身图片在此布局中保持比例居中显示。新建 rig 记录依赖部件的版本。精确运动前检查轮心、半径和真实构图；一套锚点不能直接套所有车型。
 
 ## 导出
 
