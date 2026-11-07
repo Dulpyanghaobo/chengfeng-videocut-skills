@@ -12,6 +12,7 @@ description: 复用汽车视频二维场景和粒子组件，制作背景动效�
 - 原理场景：suspension、energy、sensor、compare、asset。以连续动作讲清机制，使用真实品牌素材时先核对资料卡；通用示意按示意表达。
 
 独立动效：
+
 ```sh
 node "<工具包>/bin/auto-video.mjs" motion-project ambient --out "<输出项目>" --width 1280 --height 720 --fps 30 --theme ice --color "#59dbff" --density 100 --intensity 0.3 --speed 1 --duration 6
 node "<工具包>/bin/auto-video.mjs" render "<输出项目>/project.json" --out "<动效.mp4>"

@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "license": "Apache-2.0",
-  "engines": {"node": ">=20"},
+  "engines": {
+    "node": ">=20"
+  },
   "type": "module",
   "description": "Reusable 2D automotive assets, motion scenes and rough-cut video finishing tools.",
   "scripts": {
@@ -25,5 +27,8 @@
     "react-dom": "19.0.0",
     "remotion": "4.0.540",
     "simple-icons": "16.36.0"
+  },
+  "devDependencies": {
+    "prettier": "3.6.2"
   }
 }

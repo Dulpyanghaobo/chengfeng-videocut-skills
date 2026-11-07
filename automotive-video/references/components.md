@@ -4,16 +4,16 @@
 
 ## 可用动效
 
-| ID | 用途 | 内容 |
-|---|---|---|
-| ambient | 背景 | 漂浮微光，适合长段低强度使用 |
-| network | 背景 | 二维节点与连线，不代表实际网络拓扑 |
-| grid | 背景 | 连续波动点阵 |
-| flow | 解释辅助 | 沿二维曲线路径流动的粒子 |
-| scan | 对象揭示 | 扫描线与局部点亮 |
-| outline | 对象揭示 | 粒子沿闭合二维轮廓移动 |
-| dissolve | 聚散过渡 | 从分散到聚合再散开 |
-| sweep | 短促过渡 | 二维方向光线 |
+| ID       | 用途     | 内容                               |
+| -------- | -------- | ---------------------------------- |
+| ambient  | 背景     | 漂浮微光，适合长段低强度使用       |
+| network  | 背景     | 二维节点与连线，不代表实际网络拓扑 |
+| grid     | 背景     | 连续波动点阵                       |
+| flow     | 解释辅助 | 沿二维曲线路径流动的粒子           |
+| scan     | 对象揭示 | 扫描线与局部点亮                   |
+| outline  | 对象揭示 | 粒子沿闭合二维轮廓移动             |
+| dissolve | 聚散过渡 | 从分散到聚合再散开                 |
+| sweep    | 短促过渡 | 二维方向光线                       |
 
 `outline` 不指定对象时使用椭圆轮廓；`dissolve` 不指定对象时聚成抽象轮廓。为独立动效传入 `--asset-id logo.tesla` 或在场景设置 `assetId`，可以从透明图片/SVG 采样目标轮廓，聚合成目标字形或在其边界点亮粒子。这里是粒子轮廓效果，不是 SVG 路径逐笔描边。透明图最适合，不透明照片会把整张矩形采进来。
 
@@ -23,14 +23,14 @@
 
 ## 场景
 
-| type | 主要对象 | 参数 |
-|---|---|---|
-| suspension | 分层车体、车轮、路面起伏 | `assetId` 车辆 rig；`params.amplitude` 路面起伏幅度 |
-| energy | 电池、电机、驱动轮与连接路径 | `assetId` 电池图；`params.reverse=true` 表示回收方向 |
-| sensor | 俯视车辆与二维扫描 | `assetId` 俯视车图 |
-| compare | 两个对象同构图对照 | `assetIds` 两个 ID；`labels` 两条短标签 |
-| asset | 单对象展示 | `assetId`；实际素材与品牌字形保持原貌 |
-| motion | 独立背景或转场层 | `motion` 与上述 params；`transparent` 可透明 |
+| type       | 主要对象                     | 参数                                                 |
+| ---------- | ---------------------------- | ---------------------------------------------------- |
+| suspension | 分层车体、车轮、路面起伏     | `assetId` 车辆 rig；`params.amplitude` 路面起伏幅度  |
+| energy     | 电池、电机、驱动轮与连接路径 | `assetId` 电池图；`params.reverse=true` 表示回收方向 |
+| sensor     | 俯视车辆与二维扫描           | `assetId` 俯视车图                                   |
+| compare    | 两个对象同构图对照           | `assetIds` 两个 ID；`labels` 两条短标签              |
+| asset      | 单对象展示                   | `assetId`；实际素材与品牌字形保持原貌                |
+| motion     | 独立背景或转场层             | `motion` 与上述 params；`transparent` 可透明         |
 
 场景支持横竖比例。悬架和能量流是通用动画解释，运动不构成物理仿真、车型技术证据或真实测量。品牌 Logo 的标识与通用车身必须保持不同身份。
 
@@ -39,20 +39,26 @@
 原始 SVG 优先按语义分组：body、front-wheel、rear-wheel、chassis、battery、annotations。普通静态 SVG 不会自动变成分层 rig。
 
 可复用车辆 rig 的记录：
+
 ```json
 {
   "body": "vehicle.sedan.body",
   "wheel": "part.wheel",
   "viewBox": [1000, 420],
-  "wheelCenters": [[245, 325], [755, 325]],
+  "wheelCenters": [
+    [245, 325],
+    [755, 325]
+  ],
   "wheelRadius": 70
 }
 ```
+
 `body` 图层不包含车轮；轮心与半径使用同一坐标系。普通整图可显示、移动、缩放和淡入；车轮旋转与悬架动作需要明确部件与锚点。不要把一张整图旋转冒充车轮转动。用 `rig-create` 注册用户分层部件，具体命令见工具帮助。
 
 ```sh
 node bin/auto-video.mjs rig-create --id "vehicle.my-car.rig" --name "我的车型分层" --body "vehicle.my-car.body" --wheel "part.my-wheel" --front "245,325" --rear "755,325" --radius 70
 ```
+
 锚点以 1000×420 的统一布局为准，车身图片在此布局中保持比例居中显示。新建 rig 记录依赖部件的版本。精确运动前检查轮心、半径和真实构图；一套锚点不能直接套所有车型。
 
 ## 导出

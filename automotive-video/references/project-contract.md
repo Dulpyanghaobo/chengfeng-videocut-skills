@@ -25,11 +25,12 @@
   "motion": "grid",
   "theme": "graphite",
   "transition": "fade",
-  "params": {"intensity": 0.2, "speed": 1, "reverse": false}
+  "params": { "intensity": 0.2, "speed": 1, "reverse": false }
 }
 ```
 
 视频覆盖：
+
 ```json
 {
   "id": "broll-01",
@@ -43,7 +44,8 @@
   "transition": "cut"
 }
 ```
-静态图片用 `kind:"image"` 和 `assetId`。`fit:contain` 保留全图，cover 会裁边。素材不足覆盖时长直接报错，不偷偷循环。视频覆盖保持静音。重叠片段按数组后者在上，验证会给出提示。`fade/wipe` 是覆盖层边缘过渡，不改变母版时长；相邻镜头需要连续混合时应明确设置重叠并验收。
+
+静态图片用 `kind:"image"` 和 `assetId`。`fit:contain` 保留全图，cover 会裁边。素材不足覆盖时长直接报错，不偷偷循环。视频覆盖保持静音。重叠片段按数组后者在上，验证会给出提示。`transition:fade/wipe` 控制进入，独立 `exitTransition:fade` 控制淡出，均不改变母版时长。相邻镜头连续混合时让后一层提前约 0.3 秒进入，前一层保持不淡出，这样新层在旧画面上完成进入，避免露出底片。真实时长以当前帧率和实际画面验收。
 
 字幕样式为画面宽度比例字号、底部百分比和最大宽度。AI 根据真实语义拆分超长字幕，不用均分时间伪造逐词时间。
 
@@ -52,5 +54,7 @@
 prepare 校验母版、素材、版本和边界并生成渲染输入。render 使用同一纯帧逻辑，在粗剪母版之上绘制覆盖层和字幕，H.264 MP4 或 VP9 透明 WebM。模板场景是参数统一控制，细节修改以项目 clip ID 为单位；不宣称 Studio 源码节点支持任意片段独立源码回写。
 
 命令完成后读取 `verification.json`：尺寸、时长、音轨和哈希属于技术检查；输出抽帧才是视觉证据，人工听音须有实际记录。不要把离线合成测试写成真实汽车成片验收。
+
+`inspect-render <project.json> --video <实际输出.mp4> --out <检查目录>` 自动抽取起止、镜头中间、部分边界帧并生成 `contact-sheet.png` 与 `inspection.json`。超过 24 个选点时会采样并如实标注覆盖范围；需要补查的场景应继续抽帧。生成联系表不自动升级为 visual PASS，须实际查看。
 
 音效在画面确定后最后处理。`soundEffects` 暂存后续加音效的意图，本版不渲染该清单；原口播在 MP4 中保留。独立视频素材、透明动效和源码是否分开交付遵循当前任务。

@@ -9,16 +9,21 @@
 ## 取得文件
 
 网页原始素材直链支持：
+
 ```sh
 node bin/auto-video.mjs fetch "<直链>" --id "car.brand.model.side" --name "车型侧面行驶" --category footage --brand "<品牌>" --model "<车型>" --year "<年款>" --view side --representation photo --tags "车型,行驶,侧面" --usage "<已知使用范围>"
 ```
+
 `fetch` 对原始图片或视频进行下载、元数据检查和入库；网页、登录页、平台视频播放页不能直接当媒体。遇到限制时使用用户已有文件或其他允许来源，保留缺口。不开通付费订阅、不突破认证、不自动修改水印。
 
 本地目录：
+
 ```sh
 node bin/auto-video.mjs batch-import "<素材目录>"
 ```
+
 扫描目录内支持的普通文件，不递归扫全盘，不移动或覆盖原文件。可在原文件旁提供 `文件.svg.asset.json`：
+
 ```json
 {
   "id": "car.user-model.side",
@@ -34,6 +39,7 @@ node bin/auto-video.mjs batch-import "<素材目录>"
   "usage": "user-provided"
 }
 ```
+
 无资料卡时自动生成稳定 ID，以原文件名作为检索词，并保留“待标注”。AI 实际看图后补标签；不确定品牌/车型保留 unknown。
 
 ## 视频镜头
