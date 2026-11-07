@@ -128,6 +128,16 @@
         aspect-ratio: 16/9;
         object-fit: contain;
       }
+      .stage[data-ratio="portrait"] {
+        aspect-ratio: auto;
+        height: min(68vh, 690px);
+      }
+      #slot-fields {
+        display: contents;
+      }
+      .field[hidden] {
+        display: none;
+      }
       .transport {
         height: 55px;
         display: flex;
@@ -462,6 +472,22 @@
           <div class="eyebrow" id="kindLabel">SCENE / 场景组件</div>
           <h2 id="name">加载中</h2>
           <p class="desc" id="description"></p>
+          <label class="field" id="preset-field" hidden
+            >镜头预设<select id="preset"></select
+          ></label>
+          <label class="field" id="ratio-field" hidden
+            >画幅<select id="ratio">
+              <option value="landscape">横屏 16:9</option>
+              <option value="portrait">竖屏 9:16</option>
+            </select></label
+          >
+          <label class="field" id="safe-field" hidden
+            >字幕安全区<select id="safe-bottom">
+              <option value="false">完整画面</option>
+              <option value="true">预留两行字幕</option>
+            </select></label
+          >
+          <div id="slot-fields"></div>
           <label class="field"
             >视觉主题<select id="theme">
               <option value="graphite">石墨青柠</option>
@@ -526,13 +552,20 @@
     <script>
       let data,
         tab = "scenes",
-        selected = { kind: "scenes", id: "suspension" },
+        selected = { kind: "scenes", id: "sensor" },
         playing = false,
         time = 2,
         busy = false,
         pending = false,
         last = 0;
       const $ = (id) => document.getElementById(id);
+      const currentPreset = () =>
+        selected.kind === "scenes"
+          ? data.presets.find(
+              (preset) =>
+                preset.type === selected.id && preset.id === $("preset").value,
+            )
+          : undefined;
       const safe = (s) =>
         String(s ?? "").replace(
           /[&<>"']/g,
@@ -546,6 +579,19 @@
             })[c],
         );
       function config() {
+        const preset = currentPreset();
+        if (preset)
+          return {
+            id: preset.id,
+            kind: "scene",
+            type: preset.type,
+            preset: preset.id,
+            start: 0,
+            end: 6,
+            assetSlots: Object.fromEntries(
+              preset.slots.map(({ name }) => [name, $("slot-" + name).value]),
+            ),
+          };
         return {
           type:
             selected.kind === "motions"
@@ -572,13 +618,31 @@
           },
         };
       }
-      function url(item, t = 2) {
+      function url(item, t, useSelection = false) {
+        const preset = useSelection
+          ? currentPreset()
+          : item.kind === "scenes" &&
+            data.presets.find((p) => p.type === item.id);
+        const portrait =
+          useSelection && preset && $("ratio").value === "portrait";
         return (
           "/api/preview?" +
           new URLSearchParams({
             kind: item.kind,
             id: item.id,
-            time: t,
+            time: t ?? (preset ? preset.previewTime : 2),
+            ...(preset
+              ? {
+                  preset: preset.id,
+                  ...(useSelection
+                    ? {
+                        assetSlots: JSON.stringify(config().assetSlots),
+                        safeBottom: $("safe-bottom").value,
+                      }
+                    : {}),
+                  ...(portrait ? { width: 540, height: 960 } : {}),
+                }
+              : {}),
             theme: $("theme").value,
             density: $("density").value,
             speed: $("speed").value,
@@ -617,9 +681,11 @@
             $("stage-video").style.display = "none";
             $("transport").style.display = "flex";
           }
-          const response = await fetch(url(selected, time));
+          const selection = selected;
+          const response = await fetch(url(selection, time, true));
           if (!response.ok) throw Error(await response.text());
           const blob = await response.blob();
+          if (selection !== selected) return;
           const old = $("stage").src;
           $("stage").src = URL.createObjectURL(blob);
           if (old.startsWith("blob:")) URL.revokeObjectURL(old);
@@ -656,9 +722,48 @@
           motions: "MOTION / 粒子与动效",
           assets: "ASSET / 对象素材",
         }[kind];
-        time = 2;
+        const presets =
+          kind === "scenes" ? data.presets.filter((p) => p.type === id) : [];
+        $("preset").replaceChildren(
+          ...presets.map((p) => new Option(p.name, p.id)),
+        );
+        const hasPreset = presets.length > 0;
+        for (const key of ["preset-field", "ratio-field", "safe-field"])
+          $(key).hidden = !hasPreset;
+        for (const key of ["theme", "target", "density", "speed", "intensity"])
+          $(key).closest("label").hidden = hasPreset;
+        configurePreset();
+        time = currentPreset()?.previewTime ?? 2;
         renderList();
         update();
+      }
+      function configurePreset() {
+        const preset = currentPreset();
+        $("stage").dataset.ratio = preset ? $("ratio").value : "landscape";
+        $("slot-fields").replaceChildren();
+        if (!preset) return;
+        $("description").textContent = preset.description;
+        for (const slot of preset.slots) {
+          const field = document.createElement("label");
+          field.className = "field";
+          field.textContent = slot.label;
+          const select = document.createElement("select");
+          select.id = "slot-" + slot.name;
+          select.replaceChildren(
+            ...slot.choices.map(
+              ({ id, name }) =>
+                new Option(
+                  name,
+                  id,
+                  id === slot.defaultId,
+                  id === slot.defaultId,
+                ),
+            ),
+          );
+          select.oninput = update;
+          field.append(select);
+          $("slot-fields").append(field);
+        }
       }
       function renderList() {
         const q = $("search").value.toLowerCase();
@@ -691,6 +796,16 @@
           }),
       );
       $("search").oninput = renderList;
+      $("preset").oninput = () => {
+        configurePreset();
+        time = currentPreset().previewTime;
+        update();
+      };
+      $("ratio").oninput = () => {
+        $("stage").dataset.ratio = $("ratio").value;
+        update();
+      };
+      $("safe-bottom").oninput = update;
       for (const key of ["theme", "target", "density", "speed", "intensity"])
         $(key).oninput = () => {
           update();
@@ -746,7 +861,7 @@
             d.motions.length +
             d.scenes.length +
             "<small>可复用资源</small>";
-          choose("scenes", "suspension");
+          choose("scenes", "sensor");
           requestAnimationFrame(tick);
         });
     </script>

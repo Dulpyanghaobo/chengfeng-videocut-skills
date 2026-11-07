@@ -11,6 +11,11 @@ import {
   particlePoints,
 } from "./library.mjs";
 import { SCENES, MOTIONS, THEMES } from "./catalog-data.mjs";
+import {
+  sceneSlotIds,
+  validatePresetConfig,
+  validateSceneAssets,
+} from "./scene-presets.mjs";
 
 export function parseSrt(text) {
   const stamp = (s) => {
@@ -80,6 +85,13 @@ export function validateProject(p) {
       errors.push(`未知片段类型 ${c.id}`);
     if (c.kind === "scene" && !SCENES.some((s) => s.id === c.type))
       errors.push(`未知场景 ${c.type}`);
+    if (c.preset !== undefined || c.assetSlots !== undefined) {
+      try {
+        validatePresetConfig(c);
+      } catch (e) {
+        errors.push(`片段 ${c.id}：${e.message}`);
+      }
+    }
     if (c.motion && !MOTIONS.some((s) => s.id === c.motion))
       errors.push(`未知动效 ${c.motion}`);
     if (c.theme && !THEMES[c.theme]) errors.push(`未知主题 ${c.theme}`);
@@ -179,6 +191,8 @@ export function initProject({ video, srt, out, title = "", width, height }) {
   };
 }
 export function sceneAssets(clip) {
+  if (clip.preset !== undefined)
+    return [...new Set(Object.values(sceneSlotIds(clip)))];
   const base = SCENES.find((s) => s.id === clip.type)?.assetIds || [];
   return [
     ...new Set([
@@ -203,7 +217,7 @@ export function prepareProject(file, { refreshLock = false } = {}) {
   const previous = fs.existsSync(lockFile)
     ? readJson(lockFile)
     : { assets: [] };
-  const resolved = {};
+  const resolved = Object.create(null);
   const locked = [];
   function load(id, version) {
     if (resolved[id]) {
@@ -259,8 +273,13 @@ export function prepareProject(file, { refreshLock = false } = {}) {
     return resolved[id];
   }
   for (const c of p.clips) {
-    for (const id of c.kind === "scene" ? sceneAssets(c) : [c.assetId])
-      load(id);
+    try {
+      for (const id of c.kind === "scene" ? sceneAssets(c) : [c.assetId])
+        load(id);
+      if (c.preset !== undefined) validateSceneAssets(c, resolved);
+    } catch (e) {
+      throw Error(`片段 ${c.id}：${e.message}`);
+    }
     if (c.kind === "video") {
       const a = resolved[c.assetId];
       if (a.kind !== "video" || c.sourceOut > a.duration + 1 / p.fps)
@@ -270,6 +289,7 @@ export function prepareProject(file, { refreshLock = false } = {}) {
       throw Error("image 片段不能引用视频");
     if (
       c.kind === "scene" &&
+      c.preset === undefined &&
       c.assetId &&
       ["dissolve", "outline"].includes(c.motion)
     ) {
@@ -300,51 +320,39 @@ export function demoProject(out) {
     captions: [],
     clips: [
       {
+        id: "sensor-demo",
+        kind: "scene",
+        type: "sensor",
+        preset: "sensor.cut-in.v1",
+        start: 0,
+        end: 6,
+        transition: "cut",
+      },
+      {
         id: "suspension-demo",
         kind: "scene",
         type: "suspension",
-        start: 0,
-        end: 6,
-        title: "车轮运动，车身响应",
-        subtitle: "分层部件 · 连续动作 · 通用原理示意",
-        motion: "ambient",
-        theme: "graphite",
-        transition: "cut",
+        preset: "suspension.bump.v1",
+        start: 5.7,
+        end: 12,
+        transition: "fade",
       },
       {
         id: "energy-demo",
         kind: "scene",
         type: "energy",
-        start: 5.7,
-        end: 12,
-        title: "让能量路径看得见",
-        subtitle: "对象与粒子共享同一时间轴",
-        motion: "grid",
-        theme: "graphite",
-        transition: "wipe",
-      },
-      {
-        id: "sensor-demo",
-        kind: "scene",
-        type: "sensor",
+        preset: "energy.drive.v1",
         start: 11.7,
         end: 18,
-        title: "从对象到感知范围",
-        subtitle: "二维扫描 · 可调整速度与颜色",
-        motion: "network",
-        theme: "ice",
         transition: "fade",
       },
       {
         id: "compare-demo",
         kind: "scene",
         type: "compare",
+        preset: "compare.baseline.v1",
         start: 17.7,
         end: 24,
-        title: "换素材，复用场景",
-        subtitle: "同一构图 · 不同车型素材",
-        motion: "ambient",
-        theme: "graphite",
         labels: ["通用轿车示意", "通用 SUV 示意"],
         transition: "fade",
       },

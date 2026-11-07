@@ -19,15 +19,16 @@
   "id": "scene-energy-01",
   "kind": "scene",
   "type": "energy",
+  "preset": "energy.drive.v1",
   "start": 12.2,
   "end": 19.8,
   "title": "能量怎样到达车轮",
-  "motion": "grid",
-  "theme": "graphite",
   "transition": "fade",
-  "params": { "intensity": 0.2, "speed": 1, "reverse": false }
+  "assetSlots": { "battery": "part.battery.documentary" }
 }
 ```
+
+预设 ID 决定具体动作，`assetSlots` 复用素材快照机制，省略的素材位沿用该预设的默认素材。主题和粒子参数适用于兼容场景和独立动效。复制组件库配置后，按本期口播填写唯一片段 ID 和母版起止时间。
 
 视频覆盖：
 

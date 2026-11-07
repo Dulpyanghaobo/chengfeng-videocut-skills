@@ -28,11 +28,12 @@ import {
 } from "../src/project.mjs";
 import {
   startCatalog,
-  previewAssets,
   previewScene,
+  previewSceneAssets,
 } from "../src/catalog-server.mjs";
 import { renderSceneSvg } from "../src/visuals.mjs";
 import { SCENES, MOTIONS } from "../src/catalog-data.mjs";
+import { SCENE_PRESETS, presetSlots } from "../src/scene-presets.mjs";
 import { asrCredential, transcribeProject } from "../src/transcribe.mjs";
 import { inspectRender } from "../src/inspect.mjs";
 
@@ -121,6 +122,8 @@ export async function renderProject(
     codec: transparent ? "vp9" : "h264",
     pixelFormat: transparent ? "yuva420p" : "yuv420p",
     imageFormat: transparent ? "png" : "jpeg",
+    // The shared-memory path can tile the first captured frame during Chrome startup.
+    disableSharedMemoryCapture: true,
     concurrency: 2,
     scale: Number(scale),
     onProgress: ({ progress }) => {
@@ -214,7 +217,15 @@ async function main() {
     return;
   }
   if (command === "list") {
-    output({ assets: allAssets(), motions: MOTIONS, scenes: SCENES });
+    output({
+      assets: allAssets(),
+      motions: MOTIONS,
+      scenes: SCENES,
+      presets: SCENE_PRESETS.map((preset) => ({
+        ...preset,
+        slots: Object.keys(presetSlots(preset.id)),
+      })),
+    });
     return;
   }
   if (command === "validate") {
@@ -408,7 +419,7 @@ async function main() {
     return;
   }
   if (command === "demo") {
-    const file = demoProject(o.out || path.join(ROOT, "examples/showcase"));
+    const file = demoProject(o.out || path.join(ROOT, "examples/documentary"));
     const r = prepareProject(file);
     output({
       project: file,
@@ -462,7 +473,6 @@ async function main() {
   }
   if (command === "previews") {
     const { Resvg } = await import("@resvg/resvg-js");
-    const assets = previewAssets();
     const outputs = [];
     for (const [kind, entries] of [
       ["scenes", SCENES],
@@ -470,7 +480,16 @@ async function main() {
     ])
       for (const item of entries) {
         const scene = previewScene(kind, item.id);
-        const svg = renderSceneSvg(scene, 60, 30, 960, 540, assets);
+        const time =
+          SCENE_PRESETS.find(({ id }) => id === scene.preset)?.previewTime ?? 2;
+        const svg = renderSceneSvg(
+          scene,
+          Math.round(time * 30),
+          30,
+          960,
+          540,
+          previewSceneAssets(scene),
+        );
         const dest = path.join(LIBRARY, `previews/${kind}-${item.id}.png`);
         fs.mkdirSync(path.dirname(dest), { recursive: true });
         fs.writeFileSync(

@@ -8,6 +8,7 @@ import {
 } from "remotion";
 import { Video } from "@remotion/media";
 import { renderSceneSvg, clamp } from "./visuals.mjs";
+import { captionSafeBottom } from "./engineering-drawing.mjs";
 
 const svgUrl = (s) =>
   `data:image/svg+xml;charset=utf-8,${encodeURIComponent(s)}`;
@@ -92,12 +93,16 @@ function Clip({ clip, assets, safeBottom = 0 }) {
 }
 export function AutoVideo({ project, assets = {} }) {
   const f = useCurrentFrame();
-  const { fps, width } = useVideoConfig();
+  const { fps, width, height } = useVideoConfig();
   const time = f / fps;
   const caption = project.captions?.find(
     (c) => time >= c.start && time < c.end,
   );
   const cs = project.captionStyle || {};
+  const hasCaptions = Boolean(project.captions?.length);
+  const presetSafeBottom = hasCaptions
+    ? captionSafeBottom(width, height, cs)
+    : 0;
   return (
     <AbsoluteFill
       style={{
@@ -123,7 +128,7 @@ export function AutoVideo({ project, assets = {} }) {
           <Clip
             clip={c}
             assets={assets}
-            safeBottom={project.captions?.length ? 0.2 : 0}
+            safeBottom={c.preset ? presetSafeBottom : hasCaptions ? 0.2 : 0}
           />
         </Sequence>
       ))}

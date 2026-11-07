@@ -24,6 +24,7 @@ description: 将已经粗剪的汽车科技口播视频完成字幕校对、汽�
 2. 校对字幕的专名、数字、单位与分屏。真实技术主张有疑问时检索原始资料，单独报告，不用字幕静默替换口播事实。读 [时间线与项目合同](../../references/project-contract.md)。
 3. 按语义生成画面需求。读取 [汽车素材搜集](../../references/asset-sourcing.md)，先检索指定素材和本地库，再补充外部真实素材。只有实际取得并核对过的文件才能入镜。
 4. 每个镜头明确表达任务：观点/问题可留真人；车型展示用对应素材；机制用二维场景；参数引用保留证据。可直接运行 `search`、`list`，从固定组件选择，不必每次重画。读取 [组件与参数](../../references/components.md) 后写 `project.json` 的 `clips`。镜头长短跟语义与运动匹配。
+   新剪辑优先使用可复用预设。讲车辆并线用 `sensor.cut-in.v1`，遮挡后看见行人用 `sensor.occlusion.v1`，讲布置和覆盖方向用 `sensor.coverage.v1`。悬架按轮轴动作选择 `suspension.bump.v1`，电驱按实际能量方向选择 `energy.drive.v1` 或 `energy.regen.v1`，统一构图对比用 `compare.baseline.v1`。用 `assetSlots` 绑定已核对的素材，预览关键动作、横竖画幅和字幕安全区。
 5. `validate --project "<project.json>"` → `prepare "<project.json>"` → `render "<project.json>" --out "<整片预览.mp4>"`。这是用户要求完成剪辑时已授权的本地交付，不额外逐镜头索取确认。先执行一次代表片段验证新风格，已有确定风格可直接整片预览。技能并不代表未经检查的自动出片算法；需要 Agent 实际选择素材和编排。
 6. 用 `inspect-render "<project.json>" --video "<实际输出.mp4>"` 生成实际导出的关键帧、边界帧与联系表；真正打开这些图检查主体裁切、车型、字幕、层次、边界与动画推进。技术检查、实际像素检查、人工听音分别记录；没人听过写 UNVERIFIED。音效在画面确定后最后处理，`soundEffects` 是预留清单，当前合成器保留母版声音、覆盖素材静音，不宣称已添加音效。
 

@@ -421,6 +421,105 @@
       }
     },
     {
+      "id": "vehicle.documentary.top",
+      "name": "工程纪录片 · 俯视车辆",
+      "version": "1.0.0",
+      "kind": "svg",
+      "category": "vehicles",
+      "file": "assets/vehicle.documentary.top.svg",
+      "sha256": "26ea300228140161c5c5525d4d82dc764646270de7e7d4a839407caeb5110152",
+      "width": 180,
+      "height": 370,
+      "tags": [
+        "汽车",
+        "俯视",
+        "并线",
+        "感知",
+        "top"
+      ],
+      "representation": "schematic",
+      "brand": "",
+      "model": "",
+      "view": "top",
+      "capabilities": [
+        "display",
+        "translate",
+        "scale",
+        "fade"
+      ],
+      "colorPolicy": "preserve",
+      "source": {
+        "type": "original",
+        "usage": "project-original",
+        "description": "为汽车科技二维解释绘制的通用示意；不代表具体品牌、车型或结构尺寸"
+      }
+    },
+    {
+      "id": "part.battery.documentary",
+      "name": "工程纪录片 · 电池包",
+      "version": "1.0.0",
+      "kind": "svg",
+      "category": "parts",
+      "file": "assets/part.battery.documentary.svg",
+      "sha256": "01489aa90e4a401a52d05723984f898a56ce78297650c7a93668a72f89919006",
+      "width": 300,
+      "height": 160,
+      "tags": [
+        "电池",
+        "电驱",
+        "电池包"
+      ],
+      "representation": "schematic",
+      "brand": "",
+      "model": "",
+      "view": "top",
+      "capabilities": [
+        "display",
+        "translate",
+        "scale",
+        "fade"
+      ],
+      "colorPolicy": "preserve",
+      "source": {
+        "type": "original",
+        "usage": "project-original",
+        "description": "为汽车科技二维解释绘制的通用示意；不代表具体品牌、车型或结构尺寸"
+      }
+    },
+    {
+      "id": "part.wheel.documentary",
+      "name": "工程纪录片 · 俯视轮胎",
+      "version": "1.0.0",
+      "kind": "svg",
+      "category": "parts",
+      "file": "assets/part.wheel.documentary.svg",
+      "sha256": "abdf48b4c3312a68ad0b38c2617e5ec4328ddfb04660d8bfb3616724dbf822de",
+      "width": 64,
+      "height": 128,
+      "tags": [
+        "车轮",
+        "轮胎",
+        "电驱",
+        "俯视"
+      ],
+      "representation": "schematic",
+      "brand": "",
+      "model": "",
+      "view": "top",
+      "capabilities": [
+        "display",
+        "translate",
+        "scale",
+        "fade"
+      ],
+      "colorPolicy": "preserve",
+      "source": {
+        "type": "original",
+        "usage": "project-original",
+        "description": "为汽车科技二维解释绘制的通用示意；不代表具体品牌、车型或结构尺寸"
+      }
+    },
+    {
       "id": "part.chip",
       "name": "计算芯片示意",
       "version": "1.0.0",

@@ -162,6 +162,42 @@ add(
   ["传感器", "雷达", "摄像头", "感知", "sensor"],
 );
 add(
+  "vehicle.documentary.top",
+  "工程纪录片 · 俯视车辆",
+  "vehicles",
+  wrap(
+    '<defs><linearGradient id="body" x2="1" y2="1"><stop stop-color="#eff8fa"/><stop offset=".55" stop-color="#aabcc5"/><stop offset="1" stop-color="#657b87"/></linearGradient></defs><path d="M17 81H34V138H17ZM146 81H163V138H146ZM17 241H34V306H17ZM146 241H163V306H146Z" fill="#10191e" stroke="#748995" stroke-width="3"/><path d="M33 110 14 119 10 133 32 132M147 110 166 119 170 133 148 132" fill="#91a8b4" stroke="#d4e3e8" stroke-width="2"/><path d="M90 8C126 8 150 14 155 52L162 116 158 272 153 324C150 345 133 359 90 360 47 359 30 345 27 324L22 272 18 116 25 52C30 14 54 8 90 8Z" fill="url(#body)" stroke="#dcebf0" stroke-width="3"/><path d="M35 85Q90 58 145 85L137 127Q90 114 43 127Z M42 264Q90 276 138 264L145 310Q90 334 35 310Z" fill="#162934" stroke="#496674" stroke-width="3"/><path d="M34 130 46 140 45 249 34 262 28 223 28 167Z M146 130 134 140 135 249 146 262 152 223 152 167Z" fill="#20343e"/><path d="M51 140Q90 129 129 140L130 246Q90 256 50 246Z" fill="#b8cbd3" stroke="#728d9b" stroke-width="2"/><path d="M35 55 48 26M145 55 132 26M43 337Q90 350 137 337" fill="none" stroke="#526d7b" stroke-width="3" stroke-linecap="round"/><path d="M33 42 52 27M147 42 128 27" fill="none" stroke="#f4fcff" stroke-width="6" stroke-linecap="round"/><path d="M36 330 54 340M144 330 126 340" fill="none" stroke="#b9514c" stroke-width="6" stroke-linecap="round"/>',
+    180,
+    370,
+  ),
+  ["汽车", "俯视", "并线", "感知", "top"],
+  { view: "top" },
+);
+add(
+  "part.battery.documentary",
+  "工程纪录片 · 电池包",
+  "parts",
+  wrap(
+    `<rect x="5" y="5" width="290" height="150" rx="17" fill="#26343a" stroke="#91aab5" stroke-width="4"/><rect x="18" y="18" width="264" height="124" rx="10" fill="#15262e" stroke="#445f69" stroke-width="2"/>${Array.from({ length: 7 }, (_, column) => `<rect x="${26 + column * 36}" y="27" width="31" height="47" rx="4" fill="#365561" stroke="#6f96a2"/><rect x="${26 + column * 36}" y="86" width="31" height="47" rx="4" fill="#365561" stroke="#6f96a2"/>`).join("")}<path d="M124 79H176M150 69V89" stroke="#d5edf3" stroke-width="3" stroke-linecap="round"/>`,
+    300,
+    160,
+  ),
+  ["电池", "电驱", "电池包"],
+  { view: "top" },
+);
+add(
+  "part.wheel.documentary",
+  "工程纪录片 · 俯视轮胎",
+  "parts",
+  wrap(
+    `<rect x="3" y="3" width="58" height="122" rx="13" fill="#152129" stroke="#8ca0ad" stroke-width="4"/><path d="M20 13V115M44 13V115" stroke="#47616c" stroke-width="2"/>${Array.from({ length: 8 }, (_, row) => `<path d="M10 ${16 + row * 13}h11l11 6 11-6h11" stroke="#758c96" stroke-width="2" opacity=".7"/>`).join("")}`,
+    64,
+    128,
+  ),
+  ["车轮", "轮胎", "电驱", "俯视"],
+  { view: "top" },
+);
+add(
   "part.chip",
   "计算芯片示意",
   "parts",

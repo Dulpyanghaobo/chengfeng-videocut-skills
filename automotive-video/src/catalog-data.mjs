@@ -76,9 +76,9 @@ export const SCENES = [
   },
   {
     id: "sensor",
-    name: "传感器扫描",
-    description: "二维俯视车体、扫描区域与目标点；通用感知示意。",
-    tags: ["辅助驾驶", "传感器", "雷达", "感知"],
+    name: "驾驶环境感知",
+    description: "并线跟踪、遮挡观察、前向与侧向覆盖的俯视道路示意。",
+    tags: ["辅助驾驶", "传感器", "雷达", "感知", "并线", "遮挡"],
     assetIds: ["vehicle.top", "part.sensor"],
   },
   {

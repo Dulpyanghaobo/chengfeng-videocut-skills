@@ -23,6 +23,25 @@
 
 ## 场景
 
+### 工程纪录片预设
+
+新剪辑用 `type` 指定场景，用 `preset` 选择镜头动作。组件库可以切换预设、换素材、预留两行字幕并复制片段 JSON。横竖画幅和字幕安全区以最终工程设置为准。
+
+| type       | preset                                                                                                   | 素材位                                       |
+| ---------- | -------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| sensor     | `sensor.cut-in.v1` 并线跟踪、`sensor.occlusion.v1` 行人从遮挡后出现、`sensor.coverage.v1` 前向与侧向覆盖 | `ego` 自车，`targetVehicle` 旁车或遮挡车     |
+| suspension | `suspension.bump.v1` 驶过减速带                                                                          | `rig` 分层车辆，`params.amplitude` 起伏幅度  |
+| energy     | `energy.drive.v1` 驱动、`energy.regen.v1` 回收                                                           | `battery` 电池，`motor` 电机，`wheel` 驱动轮 |
+| compare    | `compare.baseline.v1` 同基线对比                                                                         | `left`、`right`，`labels` 可写两条短标签     |
+
+感知用车头朝上、紧贴画布的俯视 SVG 或透明 PNG，导入用 `--category vehicles --view top`。悬架用不同横坐标的前后轮心，车轮图紧贴胎面边界裁切。电驱零件导入用 `--category parts`。对比接受 SVG、图片和分层 rig，底边对齐用于画面对照，实际尺寸比例需有单独依据。
+
+`assetSlots` 可只写需要替换的项，留空时由预设填默认素材。`assetId` 可作为 `ego`、`rig` 或 `battery` 的简写，`assetIds` 是对比的 `left`、`right` 简写，显式素材位优先。预设的动作进度按片段长度映射，`title`、`subtitle`、`annotation` 可替换画面文案。已发布的预设 ID 应保持含义，重设计动作另开版本。
+
+### 兼容场景
+
+省略 `preset` 会沿用原场景，也可继续单独使用素材和动效。
+
 | type       | 主要对象                     | 参数                                                 |
 | ---------- | ---------------------------- | ---------------------------------------------------- |
 | suspension | 分层车体、车轮、路面起伏     | `assetId` 车辆 rig；`params.amplitude` 路面起伏幅度  |

@@ -9,7 +9,7 @@ description: 复用汽车视频二维场景和粒子组件，制作背景动效�
 
 - 背景：ambient、network、grid，控制强度并给正文和字幕留清楚空间。
 - 揭示与过渡：scan、outline、dissolve、sweep。普通镜头允许干净硬切；根据内容切换选择 cut/fade/wipe，不把某一种风格的切换规则扩展到全片。
-- 原理场景：suspension、energy、sensor、compare、asset。以连续动作讲清机制，使用真实品牌素材时先核对资料卡；通用示意按示意表达。
+- 原理场景：悬架、电驱、感知、对比使用 `list` 的版本化 `presets`。例如并线跟踪用 `sensor.cut-in.v1`，回收用 `energy.regen.v1`。用 `assetSlots` 替换对象，画面仍沿预设的同一时间轴运行。真实品牌素材先核对资料卡，通用构图保留原理示意标记。
 
 独立动效：
 

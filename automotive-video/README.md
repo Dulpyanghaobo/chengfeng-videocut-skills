@@ -52,9 +52,12 @@ AI 根据实际口播和素材在 project.json 中编排 clips；CLI 提供可�
 
 ```sh
 npm run demo
-node bin/auto-video.mjs render examples/showcase/project.json --out review/showcase.mp4
+node bin/auto-video.mjs render examples/documentary/project.json --out review/four-scenes.mp4
+node bin/auto-video.mjs render examples/documentary/portrait/project.json --out review/cut-in-portrait.mp4
 npm test
 ```
+
+新版组件库默认打开「相邻车辆并线」。四类工程纪录片场景提供七个镜头预设。选定预设和素材后复制配置，再填入剪辑片段的时间。完整预设和素材位见 [组件合同](references/components.md)。
 
 `library/` 保存内置素材与用户入库文件；`projects/` 保存实际项目；`assets.lock.json` 和项目快照保证公共库更新后旧项目仍可重渲染。相同 ID/版本的文件不会被静默替换。
 

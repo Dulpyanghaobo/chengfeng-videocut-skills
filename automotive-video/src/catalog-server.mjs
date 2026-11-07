@@ -11,6 +11,15 @@ import {
 } from "./library.mjs";
 import { SCENES, MOTIONS, THEMES } from "./catalog-data.mjs";
 import { renderSceneSvg } from "./visuals.mjs";
+import { captionSafeBottom } from "./engineering-drawing.mjs";
+import {
+  SCENE_PRESETS,
+  acceptsSceneAsset,
+  presetSlots,
+  sceneSlotIds,
+  validatePresetConfig,
+  validateSceneAssets,
+} from "./scene-presets.mjs";
 
 export function previewAssets() {
   const map = {};
@@ -31,6 +40,19 @@ export function previewScene(kind, id, extra = {}) {
   if (kind === "scenes") {
     const s = SCENES.find((s) => s.id === id);
     if (!s) throw Error("场景不存在");
+    const preset = extra.preset ?? SCENE_PRESETS.find((p) => p.type === id)?.id;
+    if (preset !== undefined) {
+      const scene = {
+        id,
+        kind: "scene",
+        type: id,
+        duration: 6,
+        ...extra,
+        preset,
+      };
+      validatePresetConfig(scene);
+      return scene;
+    }
     return {
       id,
       type: id,
@@ -55,6 +77,29 @@ export function previewScene(kind, id, extra = {}) {
     motion: "ambient",
     ...extra,
   };
+}
+export function previewSceneAssets(scene) {
+  if (scene.preset === undefined) return previewAssets();
+  const assets = Object.create(null);
+  function load(id, version) {
+    if (assets[id]) {
+      if (version && assets[id].version !== version)
+        throw Error(`同一场景的 rig 部件版本冲突 ${id}`);
+      return;
+    }
+    const asset = findAsset(id, version);
+    assets[id] = {
+      ...asset,
+      data: asset.kind === "video" ? "" : assetData(asset),
+    };
+    if (asset.rig) {
+      load(asset.rig.body, asset.rig.bodyVersion);
+      load(asset.rig.wheel, asset.rig.wheelVersion);
+    }
+  }
+  for (const id of Object.values(sceneSlotIds(scene))) load(id);
+  validateSceneAssets(scene, assets);
+  return assets;
 }
 function serveFile(req, res, file, type) {
   const stat = fs.statSync(file);
@@ -105,14 +150,39 @@ export function startCatalog(port = 3211) {
         return;
       }
       if (url.pathname === "/api/catalog") {
+        const assets = allAssets();
+        const latest = new Map();
+        for (const asset of assets) {
+          const existing = latest.get(asset.id);
+          if (
+            !existing ||
+            asset.version.localeCompare(existing.version, undefined, {
+              numeric: true,
+            }) > 0
+          )
+            latest.set(asset.id, asset);
+        }
         res.setHeader("Content-Type", "application/json; charset=utf-8");
         res.end(
           JSON.stringify({
             product: "automotive-video-kit",
-            assets: allAssets(),
+            assets,
             motions: MOTIONS,
             scenes: SCENES,
             themes: THEMES,
+            presets: SCENE_PRESETS.map((preset) => ({
+              ...preset,
+              slots: Object.entries(presetSlots(preset.id)).map(
+                ([name, [defaultId, type, label]]) => ({
+                  name,
+                  defaultId,
+                  label,
+                  choices: [...latest.values()]
+                    .filter((asset) => acceptsSceneAsset(type, asset))
+                    .map(({ id, name }) => ({ id, name })),
+                }),
+              ),
+            })),
           }),
         );
         return;
@@ -125,6 +195,8 @@ export function startCatalog(port = 3211) {
           height = Number(url.searchParams.get("height") || 540);
         if (
           !Number.isFinite(time) ||
+          !Number.isInteger(width) ||
+          !Number.isInteger(height) ||
           width < 64 ||
           width > 1920 ||
           height < 64 ||
@@ -133,7 +205,13 @@ export function startCatalog(port = 3211) {
           throw Error("预览参数无效");
         const color = url.searchParams.get("color");
         if (color && !/^#[a-f\d]{6}$/i.test(color)) throw Error("颜色格式错误");
+        const preset = url.searchParams.get("preset");
+        const slotJson = url.searchParams.get("assetSlots");
+        if ((preset || slotJson) && kind !== "scenes")
+          throw Error("场景预设只用于场景预览");
         const scene = previewScene(kind, id, {
+          ...(preset !== null ? { preset } : {}),
+          ...(slotJson !== null ? { assetSlots: JSON.parse(slotJson) } : {}),
           theme: url.searchParams.get("theme") || "graphite",
           params: {
             density: Number(url.searchParams.get("density") || 80),
@@ -144,7 +222,13 @@ export function startCatalog(port = 3211) {
           },
           transparent: url.searchParams.get("transparent") === "true",
         });
-        const assets = previewAssets(),
+        if (url.searchParams.get("safeBottom") === "true")
+          scene.safeBottom = scene.preset
+            ? captionSafeBottom(width, height)
+            : 0.2;
+        if (slotJson !== null && scene.preset === undefined)
+          throw Error("assetSlots 需要场景预设");
+        const assets = previewSceneAssets(scene),
           target = url.searchParams.get("assetId");
         if (
           target &&
