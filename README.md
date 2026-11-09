@@ -2,6 +2,8 @@
 
 chengfeng-videocut 的公开 **Codex Plugin 安装入口**。软件本体 Runtime / Studio 的源码与发行产物在 [chengfeng-videocut](https://github.com/Agentchengfeng/chengfeng-videocut)。
 
+本地共用动画见 [common 公共资源](common/README.md)：已提供 [辅助驾驶系列标准开头 1](common/skills/adas-series-intro/SKILL.md)，包含两年升级分化、公开论文、四维和五档的 16.333 秒二维动画。它是可复制的支持模板，不改变已发布的 Plugin 七入口或安装身份。
+
 本工作区另有独立的 [汽车科技视频工具包](automotive-video/README.md)：面向粗剪后的口播，提供可检索素材库、二维汽车组件、粒子/背景/转场、场景预览与合成。入口为 `$auto-video-edit`、`$auto-video-assets`、`$auto-video-motion`；其自有素材和项目不写入官方插件缓存。
 
 Plugin 提供给 Agent 的方法和确认工具；Runtime 执行工程操作并提供工作台。安装 Plugin、准备 Runtime、完成视频是三件不同的事。本仓不是已经停用的链接页，也不是新的独立 Skills 全套下载器。
