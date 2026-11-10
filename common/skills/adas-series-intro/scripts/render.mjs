@@ -10,14 +10,21 @@ import {homedir} from 'node:os';
 
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const require=createRequire(import.meta.url);
-const {render,validate}=require(path.join(root,'assets/scene.js'));
+const {render,validate,prepareImages}=require(path.join(root,'assets/scene.js'));
 // Reuse this repository's existing native SVG renderer. No browser or remote assets.
 const kitRequire=createRequire(path.resolve(root,'../../../automotive-video/package.json'));
 const {Resvg}=kitRequire('@resvg/resvg-js');
 const args=process.argv.slice(2);
 const value=(key,fallback)=>{const i=args.indexOf(key);if(i<0)return fallback;if(!args[i+1]||args[i+1].startsWith('--'))throw Error(`Missing ${key} value`);return args[i+1]};
 const configPath=path.resolve(value('--config',path.join(root,'assets/config.json')));
-const config=validate(JSON.parse(fs.readFileSync(configPath,'utf8')));
+const sourceConfig=validate(JSON.parse(fs.readFileSync(configPath,'utf8')));
+const imageAssets=[];
+const config=await prepareImages(sourceConfig,async src=>{
+  const file=path.resolve(path.dirname(configPath),src),data=fs.readFileSync(file);
+  const mime=/\.png$/i.test(src)?'image/png':/\.webp$/i.test(src)?'image/webp':'image/jpeg';
+  imageAssets.push({path:src,sha256:createHash('sha256').update(data).digest('hex')});
+  return `data:${mime};base64,${data.toString('base64')}`;
+});
 const out=path.resolve(value('--out',path.join(root,'output')));
 const width=Number(value('--width',1080)),fps=Number(value('--fps',config.fps));
 if(![540,1080].includes(width)||!Number.isInteger(fps)||fps<1||fps>120)throw Error('Use width 540/1080 and integer fps 1–120');
@@ -45,7 +52,8 @@ try {
   const probe=JSON.parse(execFileSync('ffprobe',['-v','error','-count_frames','-show_streams','-show_format','-of','json',output],{encoding:'utf8'}));
   const v=probe.streams.find(s=>s.codec_type==='video');
   if(v.width!==width||v.height!==height||Number(v.nb_read_frames)!==frames||v.r_frame_rate!==`${fps}/1`||probe.streams.some(s=>s.codec_type==='audio'))throw Error('Encoded video does not match expected silent animation');
-  const samples=[.9,3.8,7.2,9.5,12.3,16.1];
+  const anchors=config.styleVersion===2?[.30,.70,1.10,1.8,2.45,3.6,4.6,5.2,6.1,7.2,9.5,12.3,15.8,16.25]:[.9,3.8,7.2,9.5,12.3,16.1];
+  const samples=anchors.map(t=>t/16.333*config.duration);
   const tiles=[];
   for(let i=0;i<samples.length;i++) {
     const name=`frame-${String(i+1).padStart(2,'0')}.png`,file=path.join(out,name);
@@ -53,9 +61,11 @@ try {
     execFileSync('ffmpeg',['-v','error','-y','-ss',String(samples[i]),'-i',output,'-frames:v','1',file]);
     tiles.push({time:samples[i],file:name});
   }
-  const sheet=`<svg xmlns="http://www.w3.org/2000/svg" width="960" height="1220"><rect width="960" height="1220" fill="#06101a"/>${tiles.map((q,i)=>`<g transform="translate(${15+i%3*315} ${15+Math.floor(i/3)*600})"><image width="300" height="534" href="data:image/png;base64,${fs.readFileSync(path.join(out,q.file)).toString('base64')}"/><text x="10" y="565" fill="#b5d3e5" font-family="sans-serif" font-size="20">${q.time.toFixed(2)}s</text></g>`).join('')}</svg>`;
+  const sheetH=Math.ceil(tiles.length/3)*600+20;
+  const sheet=`<svg xmlns="http://www.w3.org/2000/svg" width="960" height="${sheetH}"><rect width="960" height="${sheetH}" fill="#06101a"/>${tiles.map((q,i)=>`<g transform="translate(${15+i%3*315} ${15+Math.floor(i/3)*600})"><image width="300" height="534" href="data:image/png;base64,${fs.readFileSync(path.join(out,q.file)).toString('base64')}"/><text x="10" y="565" fill="#b5d3e5" font-family="sans-serif" font-size="20">${q.time.toFixed(2)}s</text></g>`).join('')}</svg>`;
   fs.writeFileSync(path.join(out,'contact-sheet.png'),new Resvg(sheet,{font:{loadSystemFonts:true}}).render().asPng());
   const hash=file=>createHash('sha256').update(fs.readFileSync(file)).digest('hex');
-  fs.writeFileSync(path.join(out,'verification.json'),JSON.stringify({kind:'standalone-silent-animation',output,config:configPath,configSha256:hash(configPath),sceneSha256:hash(path.join(root,'assets/scene.js')),videoSha256:hash(output),width,height,fps,frames,fontFiles,requestedDuration:config.duration,encodedDuration:Number(probe.format.duration),audio:'none supplied; none generated',encoding:'PASS',decodedFrames:tiles,visualInspection:'UNVERIFIED',humanListening:'UNVERIFIED',productIntegration:'NOT_PERFORMED'},null,2)+'\n');
+  execFileSync('ffmpeg',['-v','error','-i',output,'-f','null','-']);
+  fs.writeFileSync(path.join(out,'verification.json'),JSON.stringify({kind:'standalone-silent-animation',styleVersion:config.styleVersion??1,output,config:configPath,configSha256:hash(configPath),sceneSha256:hash(path.join(root,'assets/scene.js')),videoSha256:hash(output),imageAssets,width,height,fps,frames,fontFiles,requestedDuration:config.duration,encodedDuration:Number(probe.format.duration),audio:'none supplied; none generated',encoding:'PASS',fullDecode:'PASS',decodedFrames:tiles,visualInspection:'UNVERIFIED',humanListening:'UNVERIFIED',productIntegration:'NOT_PERFORMED'},null,2)+'\n');
   console.log(JSON.stringify({output,width,height,fps,frames,duration:Number(probe.format.duration),bytes:fs.statSync(output).size}));
 } catch(e) { ff.kill('SIGTERM');if(fs.existsSync(tmp))fs.unlinkSync(tmp);throw e }

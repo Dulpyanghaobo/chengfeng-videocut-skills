@@ -1,5 +1,6 @@
 {
   "schemaVersion": 1,
+  "styleVersion": 2,
   "id": "adas-standard-opening-01",
   "title": "辅助驾驶系列 · 标准开头 1",
   "width": 1080,
@@ -7,6 +8,14 @@
   "fps": 60,
   "duration": 16.333,
   "captions": true,
+  "openingSlots": [
+    {"label":"车型 01","image":null},
+    {"label":"车型 02","image":null},
+    {"label":"车型 03","image":null},
+    {"label":"车型 04","image":null}
+  ],
+  "tierEntries": [],
+  "currentEpisode": {"name":"","revealed":false,"tier":null,"position":null},
   "colors": {"background": "#050b12", "cyan": "#78dafa", "amber": "#ffbd72", "mint": "#84dfc7", "purple": "#beb9ff"},
   "cues": [
     {"id":"intro-01","start":0,"end":2.466,"text":"同样花几十万买高阶辅助驾驶"},
