@@ -29,6 +29,7 @@
     if (typeof c.disclaimer !== 'string') throw Error('Missing framework disclaimer');
     if (![1,2].includes(c.styleVersion ?? 1)) throw Error('Unsupported styleVersion');
     if (c.styleVersion === 2) {
+      if (!['labels','chips'].includes(c.tierPresentation??'labels')) throw Error('Invalid tierPresentation');
       if (!Array.isArray(c.openingSlots) || c.openingSlots.length !== 4) throw Error('V2 needs four openingSlots');
       c.openingSlots.forEach((s,i) => {
         if (typeof s.label !== 'string' || !s.label.trim() || s.label.length > 24) throw Error(`Invalid slot label ${i+1}`);
@@ -43,20 +44,28 @@
         if (typeof e.name !== 'string' || !e.name.trim() || e.name.length > 24 || !/^[SABCD]$/.test(e.tier) || !['upper','middle','lower'].includes(e.position)) throw Error('Invalid tier entry: name/tier/position');
         const key=e.tier+e.position;
         if ((buckets[key]=(buckets[key]||0)+1)>2) throw Error(`Too many entries at ${key}; at most two fit side by side`);
+        if(e.image!=null&&(typeof e.image!=='string'||!e.image||/^(?:[a-z]+:|\/|\\)/i.test(e.image)||!/\.(?:png|jpe?g|webp)$/i.test(e.image)))throw Error('Use a relative chip image path');
+        if(![1,2].includes(e.chipCount??1))throw Error('chipCount must be 1 or 2');
       }
+      if(c.tierPresentation==='chips'&&chipRowHeights(entries).reduce((a,b)=>a+b,96)>1000)throw Error('Chip board is too crowded; split the displayed schemes before rendering');
     }
     return c;
   }
   async function prepareImages(config, readImage) {
     validate(config);
     if (config.styleVersion !== 2) return config;
-    const openingSlots=await Promise.all(config.openingSlots.map(async s=>{
-      if(s.image===null)return {...s,imageData:null};
-      const imageData=await readImage(s.image);
+    const cache=new Map();
+    async function prepare(s) {
+      if(s.image==null)return {...s,imageData:null};
+      if(!cache.has(s.image))cache.set(s.image,Promise.resolve().then(()=>readImage(s.image)));
+      const imageData=await cache.get(s.image);
       if(typeof imageData!=='string'||!/^data:image\/(?:png|jpeg|webp);base64,[A-Za-z0-9+/]+=*$/.test(imageData))throw Error(`Invalid image data: ${s.image}`);
       return {...s,imageData};
-    }));
-    return {...config,openingSlots};
+    }
+    const openingSlots=await Promise.all(config.openingSlots.map(prepare));
+    const tierEntries=await Promise.all(config.tierEntries.map(prepare));
+    const currentEpisode=config.currentEpisode.revealed?await prepare(config.currentEpisode):config.currentEpisode;
+    return {...config,openingSlots,tierEntries,currentEpisode};
   }
   function car(color, rotation=0) {
     let s = `<path d="M-165 25 L-156-12 Q-151-26-111-31 L-62-73 Q-49-82-17-82 L67-78 Q88-74 112-36 L158-19 Q177-12 181 13 L179 30 H145 Q140-7 111-7 Q80-7 74 30 H-76 Q-82-7-113-7 Q-145-7-150 30Z" fill="#101f2d" stroke="${color}" stroke-width="3"/>`;
@@ -385,6 +394,7 @@
   }
 
   function tiersV2(t,c) {
+    if(c.tierPresentation==='chips')return tiersWithChips(t,c);
     const local=t-c.cues[8].start,start=c.cues[9].start-c.cues[8].start;
     const colors=[c.colors.cyan,'#92c6f8',c.colors.purple,'#bba9d9','#9aaabd'];
     const heads=[234,342,450,558];
@@ -415,6 +425,69 @@
           s+=`<g data-tier="${tier}" data-position="${position}" data-name="${esc(e.name)}" opacity="${p}">${tag}</g>`;
         });
       }
+    }
+    s+=center(1575,c.currentEpisode.revealed?`本期方案：${c.currentEpisode.name}`:'本期方案：待揭晓',26,c.colors.amber);
+    s+=center(1623,c.disclaimer,21,'#8fa6b7');
+    return s;
+  }
+
+  function chipPortrait(e,x,y,size) {
+    if(e.image!=null) {
+      if(!e.imageData)throw Error(`Load chip image before rendering: ${e.image}`);
+      return `<image data-chip-image="${esc(e.name)}" href="${esc(e.imageData)}" x="${x}" y="${y}" width="${size}" height="${size}" preserveAspectRatio="xMidYMid meet"/>`;
+    }
+    return `<g data-chip-schematic="${esc(e.name)}">${group(chip('#9db7ca',0),x+size/2,y+size/2,1,size/150)}</g>`;
+  }
+  function chipRowHeights(entries) {
+    return [...'SABCD'].map(tier=>{
+      const list=entries.filter(e=>e.tier===tier);
+      return list.some(e=>e.position!=='middle')?272:list.length?192:120;
+    });
+  }
+  function tiersWithChips(t,c) {
+    const local=t-c.cues[8].start,start=c.cues[9].start-c.cues[8].start;
+    const colors=[c.colors.cyan,'#92c6f8',c.colors.purple,'#bba9d9','#9aaabd'];
+    const heads=[234,342,450,558];
+    let s=header('FIVE TIERS',t<c.cues[9].start?'国内车企，统一坐标':'S · A · B · C · D','辅助驾驶方案 · 五档框架',colors[0]);
+    heads.forEach((x,i)=>{const p=ease((local-i*.08)/.35);s+=group(text(0,0,names[i],26,'#b2c2cd','text-anchor="middle"'),x,457+20*(1-p),p);});
+    s+=text(832,457,'已讲方案',27,'#b2c2cd','text-anchor="middle"');
+    const entries=[...c.tierEntries,...(c.currentEpisode.revealed?[c.currentEpisode]:[])];
+    const heights=chipRowHeights(entries);
+    let y=545;
+    for(let row=0;row<5;row++) {
+      const tier='SABCD'[row],h=heights[row],middle=y+h/2,p=ease((local-start-row*.12)/.42),color=colors[row];
+      s+=rect(77,y,926,h,'#0b1722',19,'stroke="#2b414f" stroke-width="1.5"');
+      s+=line(162,y+18,162,y+h-18,'#2b414f',1)+line(646,y+16,646,y+h-16,'#304b5b',1);
+      s+=text(118,middle+23,tier,64,color,`text-anchor="middle" font-weight="600" opacity="${p}"`);
+      heads.forEach(x=>{
+        s+=rect(x-42,middle-21,84,42,'#07121c',8,'stroke="#3b5264" stroke-width="1.3"');
+        for(let j=0;j<5;j++) {
+          s+=rect(x-33+j*14,middle-12,10,24,'#203242',2.8);
+          if(j<5-row)s+=rect(x-33+j*14,middle-12,10,24,color,2.8,`opacity="${clamp((p*(5-row)-j)*2)}"`);
+        }
+      });
+      const activePositions=new Set(entries.filter(e=>e.tier===tier).map(e=>e.position)).size;
+      for(const position of ['upper','middle','lower']) {
+        const same=entries.filter(e=>e.tier===tier&&e.position===position);
+        same.forEach((e,i)=>{
+          const cy=y+h*{upper:.18,middle:.5,lower:.82}[position],copies=e.chipCount??1;
+          let art='';
+          if(same.length===1) {
+            const size=Math.min(80,h*.27),step=size+5,areaCenter=748;
+            for(let n=0;n<copies;n++)art+=chipPortrait(e,areaCenter-(copies*size+(copies-1)*5)/2+n*step,cy-size/2,size);
+            const units=[...e.name].reduce((n,ch)=>n+(ch.charCodeAt(0)>255?1:.56),0);
+            art+=text(914,cy+9,e.name,Math.min(27,142/units),'#e6f2fa','text-anchor="middle" font-weight="550"');
+          } else {
+            const cx=744+i*164,room=h/(activePositions===1?1:3),size=Math.min(copies===2?61:84,room*.45),total=copies*size+(copies-1)*4;
+            const imageY=cy-size/2-12;
+            for(let n=0;n<copies;n++)art+=chipPortrait(e,cx-total/2+n*(size+4),imageY,size);
+            const units=[...e.name].reduce((n,ch)=>n+(ch.charCodeAt(0)>255?1:.56),0);
+            art+=text(cx,cy+size/2+20,e.name,Math.min(25,142/units),'#e6f2fa','text-anchor="middle" font-weight="550"');
+          }
+          s+=`<g data-tier="${tier}" data-position="${position}" data-name="${esc(e.name)}" data-chip-count="${copies}" data-row-y="${y}" data-row-height="${h}" opacity="${p}">${art}</g>`;
+        });
+      }
+      y+=h+24;
     }
     s+=center(1575,c.currentEpisode.revealed?`本期方案：${c.currentEpisode.name}`:'本期方案：待揭晓',26,c.colors.amber);
     s+=center(1623,c.disclaimer,21,'#8fa6b7');

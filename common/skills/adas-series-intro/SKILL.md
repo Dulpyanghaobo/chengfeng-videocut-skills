@@ -13,6 +13,7 @@ description: 复用辅助驾驶系列标准开头1，先收集每期四辆车与
 
 - 本期四辆车的名称、左上→右上→左下→右下顺序、已有图片；图片暂缺时询问是否保留空槽。
 - 已讲过的辅助驾驶方案名称、S/A/B/C/D 档位，以及同一档的上沿／中部／下沿；同位置最多并排两个名称。
+- 方案默认采用芯片图片样式：核对芯片家族和单／双颗数量，优先复用 assets/chips 的官方素材；不得用另一款芯片图冒充。已明确的内容不重复询问。
 - 本期方案名称、是否揭晓；未揭晓时不在任何档位放占位标记，揭晓时还需用户指定档位和档内位置。
 
 这些位置是用户指定的系列评价，不是硬件的固定客观评级。不得把上期数据或参考示例自动沿用到新一期。2026-11-10 的 V2 示例是 A 上沿双图灵、中部 Thor、下沿图灵，B 中部 Orin X 与双 Orin X；它只属于该次实例，公共 config 的已讲方案保持空数组。本轮用户已明确“四个空槽、本期留空”时直接执行。
@@ -33,6 +34,8 @@ node "<模板>/scripts/render.mjs" --config "<本次目录>/config.json" --out "
 依赖为同仓 automotive-video/node_modules 的 @resvg/resvg-js 及 PATH 中的 FFmpeg/FFprobe；缺少时说明，不改变插件安装。`--width 540 --fps 30` 可快速预览，默认输出高清静音 MP4、实际解码抽帧、联系表与 verification.json。MP4 不带透明通道。导出会核对参数和全片解码；还需实际查看开场各入场时刻、升级／报错、论文与五档文字。没有音频就不声称音画同步或听感通过。
 
 `index.html` 是被动模块，接收 videocut:seek 的相对 time（秒），暴露 window.ready / window.seekTo(time)，不自播。复制后的目录经 HTTP 提供即可用宿主驱动。Node 与浏览器都先 prepareImages，将图片嵌为 data URI 后再绘制；配置了不存在的图片必须报告错误，不静默替换为空槽。
+
+五档右侧通过 tierPresentation: chips 显示图片，tierEntries 的 image 指向相对本期配置的图片，chipCount 为1或2；双颗复用两枚同款图片。已有文字版可用 tierPresentation: labels。内置 Orin、Thor、图灵宣传图的出处、原文件哈希及二维裁切坐标见 [素材记录](assets/chips/sources.json)，裁切脚本 scripts/prepare-chip-images.cjs 可从保留的原图复现。它们是官方产品宣传图，不是实物拆机或测试证据。无图片时的通用引脚图只作示意，不能宣称该型号的真实封装。
 
 ## 接入与内容边界
 

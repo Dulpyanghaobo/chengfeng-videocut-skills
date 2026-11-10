@@ -1,6 +1,7 @@
 {
   "schemaVersion": 1,
   "styleVersion": 2,
+  "tierPresentation": "chips",
   "id": "adas-standard-opening-01",
   "title": "辅助驾驶系列 · 标准开头 1",
   "width": 1080,
